@@ -59,7 +59,7 @@ func TestZonesListJSON(t *testing.T) {
 	}
 
 	out := fx.Stdout.String()
-	if !strings.Contains(out, `"Name": "example.com"`) {
+	if !strings.Contains(out, `"name": "example.com"`) {
 		t.Errorf("expected JSON output to contain example.com, got:\n%s", out)
 	}
 }

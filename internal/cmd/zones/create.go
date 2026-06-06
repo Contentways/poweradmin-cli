@@ -42,15 +42,29 @@ func NewCreateCmd() *cobra.Command {
 				return fmt.Errorf("failed to create zone: %w", err)
 			}
 
+			nameservers, _ := cmd.Flags().GetStringArray("nameserver")
+			for _, ns := range nameservers {
+				_, _, err := client.Record.Create(cmd.Context(), id, poweradmin.RecordCreateOpts{
+					Name:    args[0],
+					Type:    "NS",
+					Content: ns,
+					TTL:     3600,
+				})
+				if err != nil {
+					return fmt.Errorf("failed to create NS record for %s: %w", ns, err)
+				}
+			}
+
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
 			// JSON output — return the new zone's ID, name and type.
 			if outputFmt == output.FormatJSON {
 				data, err := json.MarshalIndent(map[string]any{
-					"id":   id,
-					"name": args[0],
-					"type": zoneType,
+					"id":          id,
+					"name":        args[0],
+					"type":        zoneType,
+					"nameservers": nameservers,
 				}, "", "  ")
 				if err != nil {
 					return fmt.Errorf("failed to marshal json: %w", err)
@@ -66,6 +80,7 @@ func NewCreateCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String("type", "NATIVE", "Zone type. One of: NATIVE|MASTER|SLAVE")
+	cmd.Flags().StringArray("nameserver", []string{}, "Nameserver to add (can be specified multiple times)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
 	return cmd
 }

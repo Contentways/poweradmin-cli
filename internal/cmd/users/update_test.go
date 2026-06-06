@@ -61,7 +61,7 @@ func TestUsersUpdateJSON(t *testing.T) {
 	}
 
 	out := fx.Stdout.String()
-	if !strings.Contains(out, `"Username": "max"`) {
+	if !strings.Contains(out, `"username": "max"`) {
 		t.Errorf("expected JSON to contain max, got:\n%s", out)
 	}
 }

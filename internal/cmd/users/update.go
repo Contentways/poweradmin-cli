@@ -9,6 +9,7 @@ import (
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
 	"github.com/contentways/poweradmin-cli/internal/output"
+	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
@@ -81,7 +82,7 @@ func NewUpdateCmd() *cobra.Command {
 
 			// JSON output — return the updated user object.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(user, "", "  ")
+				data, err := json.MarshalIndent(schema.UserFromSDK(user), "", "  ")
 				if err != nil {
 					return fmt.Errorf("failed to marshal json: %w", err)
 				}

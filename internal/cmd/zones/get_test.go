@@ -65,7 +65,7 @@ func TestZonesGetByNameJSON(t *testing.T) {
 	}
 
 	out := fx.Stdout.String()
-	if !strings.Contains(out, `"Name": "example.com"`) {
+	if !strings.Contains(out, `"name": "example.com"`) {
 		t.Errorf("expected JSON to contain example.com, got:\n%s", out)
 	}
 	if !strings.Contains(out, "ns1.example.com") {

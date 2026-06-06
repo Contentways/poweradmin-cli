@@ -66,7 +66,7 @@ func TestRecordsListJSON(t *testing.T) {
 	}
 
 	out := fx.Stdout.String()
-	if !strings.Contains(out, `"Name": "www.example.com"`) {
+	if !strings.Contains(out, `"name": "www.example.com"`) {
 		t.Errorf("expected JSON to contain www.example.com, got:\n%s", out)
 	}
 }
