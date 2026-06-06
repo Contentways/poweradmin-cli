@@ -104,6 +104,6 @@ func NewCreateCmd() *cobra.Command {
 	cmd.Flags().String("content", "", "Record content (e.g. 1.2.3.4 for A records)")
 	cmd.Flags().Int("ttl", 3600, "Time to live in seconds (default: 3600)")
 	cmd.Flags().Int("priority", 0, "Record priority, used for MX records (default: 0)")
-	cmd.Flags().String("output", "table", "Output format. One of: table|json")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
 	return cmd
 }

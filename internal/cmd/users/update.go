@@ -101,6 +101,6 @@ func NewUpdateCmd() *cobra.Command {
 	cmd.Flags().String("fullname", "", "New full name")
 	cmd.Flags().String("password", "", "New password")
 	cmd.Flags().Bool("active", true, "Whether the user is active")
-	cmd.Flags().String("output", "table", "Output format. One of: table|json")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
 	return cmd
 }

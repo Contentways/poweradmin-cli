@@ -90,6 +90,6 @@ func NewDeleteCmd() *cobra.Command {
 	cmd.Flags().String("zone-name", "", "Zone name (e.g. example.com)")
 	cmd.Flags().String("zone-id", "", "Zone ID")
 	cmd.Flags().String("id", "", "Record ID (opaque string returned by the API)")
-	cmd.Flags().String("output", "table", "Output format. One of: table|json")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
 	return cmd
 }

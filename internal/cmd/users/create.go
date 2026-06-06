@@ -109,6 +109,6 @@ func NewCreateCmd() *cobra.Command {
 	cmd.Flags().String("email", "", "Email address (required)")
 	cmd.Flags().String("fullname", "", "Full name")
 	cmd.Flags().Bool("active", true, "Whether the user is active (default: true)")
-	cmd.Flags().String("output", "table", "Output format. One of: table|json")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
 	return cmd
 }

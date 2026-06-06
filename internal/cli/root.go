@@ -44,8 +44,8 @@ func NewRootCommand(s *state.State) *cobra.Command {
 
 	// Persistent flags are available to the root command and all subcommands.
 	// They override values from the config file and environment variables.
-	root.PersistentFlags().String("url", "", "Poweradmin URL (e.g. https://dns.example.com)")
-	root.PersistentFlags().String("api-key", "", "Poweradmin API key (overrides config and env)")
+	root.PersistentFlags().StringP("url", "u", "", "Poweradmin URL (e.g. https://dns.example.com)")
+	root.PersistentFlags().StringP("api-key", "k", "", "Poweradmin API key (overrides config and env)")
 
 	// Register all resource subcommands.
 	root.AddCommand(zones.NewZonesCommand())

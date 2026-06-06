@@ -59,6 +59,6 @@ func NewListCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String("output", "table", "Output format. One of: json|table|full")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
 	return cmd
 }

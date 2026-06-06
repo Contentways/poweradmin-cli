@@ -89,6 +89,6 @@ func NewListCmd() *cobra.Command {
 
 	cmd.Flags().String("zone-name", "", "Zone name (e.g. example.com)")
 	cmd.Flags().String("zone-id", "", "Zone ID")
-	cmd.Flags().String("output", "table", "Output format. One of: table|full|json")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
 	return cmd
 }

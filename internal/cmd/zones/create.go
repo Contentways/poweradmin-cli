@@ -66,6 +66,6 @@ func NewCreateCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String("type", "NATIVE", "Zone type. One of: NATIVE|MASTER|SLAVE")
-	cmd.Flags().String("output", "table", "Output format. One of: table|json")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
 	return cmd
 }
