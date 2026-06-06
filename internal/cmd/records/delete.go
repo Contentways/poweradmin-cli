@@ -3,9 +3,11 @@
 package records
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
@@ -51,6 +53,21 @@ var DeleteCmd = &cobra.Command{
 			return fmt.Errorf("failed to delete record: %w", err)
 		}
 
+		outputStr, _ := cmd.Flags().GetString("output")
+		outputFmt := output.ParseFormat(outputStr)
+
+		if outputFmt == output.FormatJSON {
+			data, err := json.MarshalIndent(map[string]any{
+				"id":      recordID,
+				"zone_id": zoneID,
+			}, "", "  ")
+			if err != nil {
+				return fmt.Errorf("failed to marshal json: %w", err)
+			}
+			fmt.Println(string(data))
+			return nil
+		}
+
 		fmt.Printf("deleted record (id %s) from zone (id %d)\n", recordID, zoneID)
 		return nil
 	},
@@ -60,4 +77,5 @@ func init() {
 	DeleteCmd.Flags().String("zone-name", "", "Zone name (e.g. example.com)")
 	DeleteCmd.Flags().String("zone-id", "", "Zone ID")
 	DeleteCmd.Flags().String("id", "", "Record ID")
+	DeleteCmd.Flags().String("output", "table", "Output format: table, json")
 }

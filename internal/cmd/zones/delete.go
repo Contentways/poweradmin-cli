@@ -3,9 +3,11 @@
 package zones
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
@@ -16,10 +18,8 @@ var DeleteCmd = &cobra.Command{
 	Long:  `Delete a DNS zone from Poweradmin by name or ID.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s := state.FromContext(cmd.Context())
-
 		name, _ := cmd.Flags().GetString("name")
 		idStr, _ := cmd.Flags().GetString("id")
-
 		client, err := s.Client()
 		if err != nil {
 			return fmt.Errorf("failed to create client: %w", err)
@@ -30,7 +30,6 @@ var DeleteCmd = &cobra.Command{
 		}
 
 		var zoneID int
-
 		if idStr != "" {
 			id, err := strconv.Atoi(idStr)
 			if err != nil {
@@ -43,6 +42,7 @@ var DeleteCmd = &cobra.Command{
 				return fmt.Errorf("failed to resolve zone: %w", err)
 			}
 			zoneID = zone.ID
+			name = zone.Name
 		}
 
 		_, err = client.Zone.Delete(cmd.Context(), zoneID)
@@ -50,7 +50,22 @@ var DeleteCmd = &cobra.Command{
 			return fmt.Errorf("failed to delete zone: %w", err)
 		}
 
-		fmt.Printf("deleted zone (id %d)\n", zoneID)
+		outputStr, _ := cmd.Flags().GetString("output")
+		outputFmt := output.ParseFormat(outputStr)
+
+		if outputFmt == output.FormatJSON {
+			data, err := json.MarshalIndent(map[string]any{
+				"id":   zoneID,
+				"name": name,
+			}, "", "  ")
+			if err != nil {
+				return fmt.Errorf("failed to marshal json: %w", err)
+			}
+			fmt.Println(string(data))
+			return nil
+		}
+
+		fmt.Printf("deleted zone %s (id %d)\n", name, zoneID)
 		return nil
 	},
 }
@@ -58,4 +73,5 @@ var DeleteCmd = &cobra.Command{
 func init() {
 	DeleteCmd.Flags().String("name", "", "Zone name (e.g. example.com)")
 	DeleteCmd.Flags().String("id", "", "Zone ID")
+	DeleteCmd.Flags().String("output", "table", "Output format: table, json")
 }
