@@ -12,12 +12,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// DeleteCmd deletes a DNS record by its ID from the specified zone.
+// The zone can be identified by name or numeric ID.
+// The record ID is the opaque string identifier returned by the Poweradmin API
+// in 4.3.0+ API-mode (Base64-encoded JSON).
+// Output can be a human-readable confirmation (default) or JSON
+// containing the deleted record's ID and zone ID.
 var DeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete a DNS record",
 	Long:  `Delete a DNS record by ID from a zone.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s := state.FromContext(cmd.Context())
+
 		client, err := s.Client()
 		if err != nil {
 			return fmt.Errorf("failed to create client: %w", err)
@@ -34,6 +41,8 @@ var DeleteCmd = &cobra.Command{
 			return fmt.Errorf("--id is required")
 		}
 
+		// Resolve zone ID — either parse the numeric flag directly,
+		// or look up the zone by name to obtain its ID.
 		var zoneID int
 		if zoneIDStr != "" {
 			zoneID, err = strconv.Atoi(zoneIDStr)
@@ -56,6 +65,7 @@ var DeleteCmd = &cobra.Command{
 		outputStr, _ := cmd.Flags().GetString("output")
 		outputFmt := output.ParseFormat(outputStr)
 
+		// JSON output — return the deleted record's ID and zone ID.
 		if outputFmt == output.FormatJSON {
 			data, err := json.MarshalIndent(map[string]any{
 				"id":      recordID,
@@ -68,6 +78,7 @@ var DeleteCmd = &cobra.Command{
 			return nil
 		}
 
+		// Default output — human-readable confirmation.
 		fmt.Printf("deleted record (id %s) from zone (id %d)\n", recordID, zoneID)
 		return nil
 	},
@@ -76,6 +87,6 @@ var DeleteCmd = &cobra.Command{
 func init() {
 	DeleteCmd.Flags().String("zone-name", "", "Zone name (e.g. example.com)")
 	DeleteCmd.Flags().String("zone-id", "", "Zone ID")
-	DeleteCmd.Flags().String("id", "", "Record ID")
-	DeleteCmd.Flags().String("output", "table", "Output format: table, json")
+	DeleteCmd.Flags().String("id", "", "Record ID (opaque string returned by the API)")
+	DeleteCmd.Flags().String("output", "table", "Output format. One of: table|json")
 }

@@ -12,14 +12,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// DeleteCmd deletes a DNS zone from Poweradmin by name or numeric ID.
+// If a name is provided, it is first resolved to an ID via the API.
+// Output can be a human-readable confirmation (default) or JSON
+// containing the deleted zone's ID and name.
 var DeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete a DNS zone",
 	Long:  `Delete a DNS zone from Poweradmin by name or ID.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s := state.FromContext(cmd.Context())
+
 		name, _ := cmd.Flags().GetString("name")
 		idStr, _ := cmd.Flags().GetString("id")
+
 		client, err := s.Client()
 		if err != nil {
 			return fmt.Errorf("failed to create client: %w", err)
@@ -29,6 +35,8 @@ var DeleteCmd = &cobra.Command{
 			return fmt.Errorf("either --name or --id is required")
 		}
 
+		// Resolve zone ID — either parse the numeric flag directly,
+		// or look up the zone by name to obtain its ID.
 		var zoneID int
 		if idStr != "" {
 			id, err := strconv.Atoi(idStr)
@@ -53,6 +61,7 @@ var DeleteCmd = &cobra.Command{
 		outputStr, _ := cmd.Flags().GetString("output")
 		outputFmt := output.ParseFormat(outputStr)
 
+		// JSON output — return the deleted zone's ID and name.
 		if outputFmt == output.FormatJSON {
 			data, err := json.MarshalIndent(map[string]any{
 				"id":   zoneID,
@@ -65,6 +74,7 @@ var DeleteCmd = &cobra.Command{
 			return nil
 		}
 
+		// Default output — human-readable confirmation.
 		fmt.Printf("deleted zone %s (id %d)\n", name, zoneID)
 		return nil
 	},
@@ -73,5 +83,5 @@ var DeleteCmd = &cobra.Command{
 func init() {
 	DeleteCmd.Flags().String("name", "", "Zone name (e.g. example.com)")
 	DeleteCmd.Flags().String("id", "", "Zone ID")
-	DeleteCmd.Flags().String("output", "table", "Output format: table, json")
+	DeleteCmd.Flags().String("output", "table", "Output format. One of: table|json")
 }

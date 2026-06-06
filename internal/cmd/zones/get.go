@@ -13,12 +13,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// GetCmd retrieves a single DNS zone by name or ID and prints its details,
+// including the configured nameservers. Output can be a key-value summary
+// (default) or JSON including the nameserver list.
 var GetCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get a DNS zone by name or ID",
 	Long:  `Get a DNS zone by name or ID from Poweradmin.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s := state.FromContext(cmd.Context())
+
 		client, err := s.Client()
 		if err != nil {
 			return fmt.Errorf("failed to create client: %w", err)
@@ -31,6 +35,7 @@ var GetCmd = &cobra.Command{
 			return fmt.Errorf("either --name or --id is required")
 		}
 
+		// Resolve the zone — either by numeric ID or by name.
 		var zone *poweradmin.Zone
 		var getErr error
 		if idStr != "" {
@@ -49,6 +54,7 @@ var GetCmd = &cobra.Command{
 		outputStr, _ := cmd.Flags().GetString("output")
 		outputFmt := output.ParseFormat(outputStr)
 
+		// JSON output — fetch records, extract NS entries, and return a combined object.
 		if outputFmt == output.FormatJSON {
 			records, err := client.Record.All(cmd.Context(), zone.ID)
 			if err != nil {
@@ -62,6 +68,7 @@ var GetCmd = &cobra.Command{
 				}
 			}
 
+			// zoneJSON embeds the Zone struct and adds the resolved nameserver list.
 			type zoneJSON struct {
 				*poweradmin.Zone
 				Nameservers []string `json:"Nameservers"`
@@ -75,6 +82,7 @@ var GetCmd = &cobra.Command{
 			return nil
 		}
 
+		// Default output — key-value summary with nameservers.
 		records, err := client.Record.All(cmd.Context(), zone.ID)
 		if err != nil {
 			return fmt.Errorf("failed to get records: %w", err)
@@ -86,12 +94,14 @@ var GetCmd = &cobra.Command{
 		if zone.Masters != "" {
 			fmt.Printf("Masters: %s\n", zone.Masters)
 		}
+
 		fmt.Println("Nameservers:")
 		for _, r := range records {
 			if r.Type == "NS" {
 				fmt.Printf("  %s\n", r.Content)
 			}
 		}
+
 		return nil
 	},
 }
@@ -99,5 +109,5 @@ var GetCmd = &cobra.Command{
 func init() {
 	GetCmd.Flags().String("name", "", "Zone name (e.g. example.com)")
 	GetCmd.Flags().String("id", "", "Zone ID")
-	GetCmd.Flags().String("output", "table", "Output format: table, full, json")
+	GetCmd.Flags().String("output", "table", "Output format. One of: table|json")
 }

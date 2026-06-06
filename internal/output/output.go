@@ -1,17 +1,29 @@
 // Copyright (c) 2026 Contentways
 // SPDX-License-Identifier: MIT
+
+// Package output provides shared output formatting utilities for the CLI.
+// It supports three output formats: table (default), full and json.
 package output
 
-// Format represents the output format.
+// Format represents the output format requested by the user via --output flag.
 type Format string
 
 const (
+	// FormatTable renders a human-readable aligned table with truncated content.
+	// This is the default format.
 	FormatTable Format = "table"
-	FormatFull  Format = "full"
-	FormatJSON  Format = "json"
+
+	// FormatFull renders a human-readable aligned table without truncation.
+	// Long content values (e.g. TXT records) are shown in full.
+	FormatFull Format = "full"
+
+	// FormatJSON renders the output as indented JSON.
+	// Useful for scripting and piping into tools like jq.
+	FormatJSON Format = "json"
 )
 
-// ParseFormat parses a format string.
+// ParseFormat converts a raw string flag value into a Format constant.
+// Any unrecognised value falls back to FormatTable.
 func ParseFormat(s string) Format {
 	switch s {
 	case "full":

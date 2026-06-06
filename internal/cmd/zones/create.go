@@ -12,6 +12,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// CreateCmd creates a new DNS zone in Poweradmin.
+// The zone name is passed as a positional argument.
+// Output can be a human-readable confirmation (default) or JSON
+// containing the new zone's ID, name and type.
 var CreateCmd = &cobra.Command{
 	Use:   "create <name>",
 	Short: "Create a DNS zone",
@@ -19,7 +23,9 @@ var CreateCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s := state.FromContext(cmd.Context())
+
 		zoneType, _ := cmd.Flags().GetString("type")
+
 		client, err := s.Client()
 		if err != nil {
 			return fmt.Errorf("failed to create client: %w", err)
@@ -36,6 +42,7 @@ var CreateCmd = &cobra.Command{
 		outputStr, _ := cmd.Flags().GetString("output")
 		outputFmt := output.ParseFormat(outputStr)
 
+		// JSON output — return the new zone's ID, name and type.
 		if outputFmt == output.FormatJSON {
 			data, err := json.MarshalIndent(map[string]any{
 				"id":   id,
@@ -49,12 +56,13 @@ var CreateCmd = &cobra.Command{
 			return nil
 		}
 
+		// Default output — human-readable confirmation.
 		fmt.Printf("created zone %s (id %d)\n", args[0], id)
 		return nil
 	},
 }
 
 func init() {
-	CreateCmd.Flags().String("type", "NATIVE", "Zone type: NATIVE, MASTER or SLAVE")
-	CreateCmd.Flags().String("output", "table", "Output format: table, json")
+	CreateCmd.Flags().String("type", "NATIVE", "Zone type. One of: NATIVE|MASTER|SLAVE")
+	CreateCmd.Flags().String("output", "table", "Output format. One of: table|json")
 }

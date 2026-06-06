@@ -13,6 +13,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// ListCmd lists all DNS zones in Poweradmin.
+// Output can be formatted as a human-readable table (default) or JSON.
 var ListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all DNS zones",
@@ -33,6 +35,7 @@ var ListCmd = &cobra.Command{
 		outputStr, _ := cmd.Flags().GetString("output")
 		outputFmt := output.ParseFormat(outputStr)
 
+		// JSON output — print the raw zone list and return early.
 		if outputFmt == output.FormatJSON {
 			data, err := json.MarshalIndent(zones, "", "  ")
 			if err != nil {
@@ -42,6 +45,7 @@ var ListCmd = &cobra.Command{
 			return nil
 		}
 
+		// Table output — render an aligned table with ID, name and type columns.
 		t := output.New(os.Stdout)
 		t.AddHeader("ID", "NAME", "TYPE")
 		for _, z := range zones {
@@ -54,5 +58,5 @@ var ListCmd = &cobra.Command{
 }
 
 func init() {
-	ListCmd.Flags().String("output", "table", "Output format. One of: json|table")
+	ListCmd.Flags().String("output", "table", "Output format. One of: json|table|full")
 }
