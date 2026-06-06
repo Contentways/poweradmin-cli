@@ -1,0 +1,19 @@
+package zones_test
+
+import (
+	"testing"
+
+	"github.com/contentways/poweradmin-cli/internal/cmd/zones"
+)
+
+func TestNewZonesCommand(t *testing.T) {
+	cmd := zones.NewZonesCommand()
+
+	if cmd.Use != "zones" {
+		t.Fatalf("Use = %q", cmd.Use)
+	}
+
+	if len(cmd.Commands()) != 4 {
+		t.Fatalf("got %d subcommands, want 4", len(cmd.Commands()))
+	}
+}

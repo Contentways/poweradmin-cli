@@ -6,6 +6,7 @@ import (
 	"context"
 	"testing"
 
+	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
 	"github.com/contentways/poweradmin-cli/internal/state"
 )
 
@@ -37,5 +38,21 @@ func TestFromContextEmpty(t *testing.T) {
 	// FromContext returns an empty State, never nil.
 	if got.URL != "" || got.APIKey != "" {
 		t.Errorf("expected empty State, got: %+v", got)
+	}
+}
+
+func TestClientWithMockClient(t *testing.T) {
+	s := &state.State{
+		MockClient: &poweradmin.Client{},
+	}
+
+	client, err := s.Client()
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if client != s.MockClient {
+		t.Fatal("expected mock client")
 	}
 }

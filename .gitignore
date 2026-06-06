@@ -4,3 +4,4 @@ build
 coverage.txt
 # Added by goreleaser init:
 dist/
+coverage.out
