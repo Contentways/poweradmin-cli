@@ -1,8 +1,8 @@
 # poweradmin-cli
 
-A command-line interface for managing DNS zones and records via the [Poweradmin](https://www.poweradmin.org) REST API.
+A command-line interface for managing DNS zones, records and users via the [Poweradmin](https://www.poweradmin.org) REST API.
 
-Built with [poweradmin-go](https://contentways.dev/contentways/poweradmin-go) — the official Go SDK for Poweradmin.
+Built with [poweradmin-go](https://contentways.dev/contentways/poweradmin-go) — the Go SDK for Poweradmin.
 
 ## Requirements
 
@@ -10,6 +10,16 @@ Built with [poweradmin-go](https://contentways.dev/contentways/poweradmin-go) �
 - A valid Poweradmin API key
 
 ## Installation
+
+### From release
+
+Download the latest binary for your platform from the [releases page](https://github.com/Contentways/poweradmin-cli/releases):
+
+```bash
+# Linux (amd64)
+curl -L https://github.com/Contentways/poweradmin-cli/releases/latest/download/poweradmin-cli_Linux_x86_64.tar.gz | tar xz
+sudo mv poweradmin /usr/local/bin/
+```
 
 ### From source
 
@@ -130,6 +140,37 @@ poweradmin records create \
 poweradmin records delete \
   --zone-name example.com \
   --id eyJ6IjoiZXhhbXBsZS5jb20i...
+```
+
+### Users
+
+```bash
+# List all users
+poweradmin users list
+poweradmin users list --output json
+
+# Get a user by name or ID
+poweradmin users get --name patrick
+poweradmin users get --id 1
+poweradmin users get --name patrick --output json
+
+# Create a user
+poweradmin users create \
+  --username patrick \
+  --password secret123 \
+  --email patrick@example.com \
+  --fullname "Patrick Omland"
+
+# Update a user
+poweradmin users update --name patrick --email new@example.com
+poweradmin users update --id 1 --active=false
+
+# Delete a user
+poweradmin users delete --name patrick
+poweradmin users delete --id 1
+
+# Assign a permission template
+poweradmin users set-permission-template --name patrick --template-id 2
 ```
 
 ## Output Formats

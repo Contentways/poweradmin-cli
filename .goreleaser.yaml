@@ -10,8 +10,12 @@ builds:
     binary: poweradmin
     env:
       - CGO_ENABLED=0
+    flags:
+      - -trimpath
     ldflags:
-      - -s -w -X main.version={{.Version}}
+      - -s
+      - -w
+      - -X main.version={{ .Version }}
     goos:
       - linux
       - darwin
@@ -30,9 +34,13 @@ archives:
     format_overrides:
       - goos: windows
         formats: [zip]
+    files:
+      - LICENSE
+      - README.md
 
 checksum:
   name_template: "checksums.txt"
+  algorithm: sha256
 
 changelog:
   sort: asc
@@ -43,6 +51,8 @@ changelog:
       - "^chore:"
 
 release:
+  draft: false
+  prerelease: auto
   footer: >-
     ---
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
