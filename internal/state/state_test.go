@@ -34,10 +34,8 @@ func TestWithContextAndFromContext(t *testing.T) {
 
 func TestFromContextEmpty(t *testing.T) {
 	got := state.FromContext(context.Background())
-	if got == nil {
-		t.Error("expected empty State, got nil")
-	}
-	if got.URL != "" {
-		t.Errorf("expected empty URL, got: %q", got.URL)
+	// FromContext returns an empty State, never nil.
+	if got.URL != "" || got.APIKey != "" {
+		t.Errorf("expected empty State, got: %+v", got)
 	}
 }
