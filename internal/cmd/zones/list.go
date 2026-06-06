@@ -4,7 +4,10 @@ package zones
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
@@ -26,9 +29,12 @@ var ListCmd = &cobra.Command{
 			return fmt.Errorf("failed to list zones: %w", err)
 		}
 
+		t := output.New(os.Stdout)
+		t.AddHeader("ID", "NAME", "TYPE")
 		for _, z := range zones {
-			fmt.Printf("%d\t%s\t%s\n", z.ID, z.Name, z.Type)
+			t.AddRow(strconv.Itoa(z.ID), z.Name, string(z.Type))
 		}
+		t.Flush()
 
 		return nil
 	},

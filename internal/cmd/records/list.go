@@ -3,8 +3,12 @@
 package records
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
+	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
@@ -43,9 +47,29 @@ var ListCmd = &cobra.Command{
 			return fmt.Errorf("failed to list records: %w", err)
 		}
 
-		for _, r := range records {
-			fmt.Printf("%s\t%s\t%s\tTTL=%d\n", r.Name, r.Type, r.Content, r.TTL)
+		outputStr, _ := cmd.Flags().GetString("output")
+		outputFmt := output.ParseFormat(outputStr)
+
+		if outputFmt == output.FormatJSON {
+			data, err := json.MarshalIndent(records, "", "  ")
+			if err != nil {
+				return fmt.Errorf("failed to marshal json: %w", err)
+			}
+			fmt.Println(string(data))
+			return nil
 		}
+
+		t := output.New(os.Stdout)
+		t.AddHeader("NAME", "TYPE", "CONTENT", "TTL")
+
+		for _, r := range records {
+			content := r.Content
+			if outputFmt == output.FormatTable {
+				content = output.Truncate(content, 50)
+			}
+			t.AddRow(r.Name, r.Type, content, strconv.Itoa(r.TTL))
+		}
+		t.Flush()
 
 		return nil
 	},
@@ -54,4 +78,5 @@ var ListCmd = &cobra.Command{
 func init() {
 	ListCmd.Flags().String("zone-name", "", "Zone name (e.g. example.com)")
 	ListCmd.Flags().String("zone-id", "", "Zone ID")
+	ListCmd.Flags().String("output", "table", "Output format: table, full, json")
 }
