@@ -5,6 +5,7 @@ package cli
 import (
 	"os"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/records"
 	"github.com/contentways/poweradmin-cli/internal/cmd/zones"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
@@ -26,6 +27,7 @@ func NewRootCommand(s *state.State) *cobra.Command {
 	root.PersistentFlags().String("api-key", "", "Poweradmin API key")
 
 	root.AddCommand(zones.NewZonesCommand())
+	root.AddCommand(records.NewRecordsCommand())
 
 	return root
 }

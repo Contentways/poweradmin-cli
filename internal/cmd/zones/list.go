@@ -16,7 +16,12 @@ var ListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s := state.FromContext(cmd.Context())
 
-		zones, err := s.Client().Zone.All(cmd.Context())
+		client, err := s.Client()
+		if err != nil {
+			return fmt.Errorf("failed to create client: %w", err)
+		}
+
+		zones, err := client.Zone.All(cmd.Context())
 		if err != nil {
 			return fmt.Errorf("failed to list zones: %w", err)
 		}

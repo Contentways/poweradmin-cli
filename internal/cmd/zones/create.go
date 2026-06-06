@@ -20,7 +20,12 @@ var CreateCmd = &cobra.Command{
 
 		zoneType, _ := cmd.Flags().GetString("type")
 
-		id, _, err := s.Client().Zone.Create(cmd.Context(), poweradmin.ZoneCreateOpts{
+		client, err := s.Client()
+		if err != nil {
+			return fmt.Errorf("failed to create client: %w", err)
+		}
+
+		id, _, err := client.Zone.Create(cmd.Context(), poweradmin.ZoneCreateOpts{
 			Name: args[0],
 			Type: poweradmin.ZoneType(zoneType),
 		})

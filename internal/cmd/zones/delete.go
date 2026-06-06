@@ -20,6 +20,11 @@ var DeleteCmd = &cobra.Command{
 		name, _ := cmd.Flags().GetString("name")
 		idStr, _ := cmd.Flags().GetString("id")
 
+		client, err := s.Client()
+		if err != nil {
+			return fmt.Errorf("failed to create client: %w", err)
+		}
+
 		if name == "" && idStr == "" {
 			return fmt.Errorf("either --name or --id is required")
 		}
@@ -33,14 +38,14 @@ var DeleteCmd = &cobra.Command{
 			}
 			zoneID = id
 		} else {
-			zone, _, err := s.Client().Zone.GetByName(cmd.Context(), name)
+			zone, _, err := client.Zone.GetByName(cmd.Context(), name)
 			if err != nil {
 				return fmt.Errorf("failed to resolve zone: %w", err)
 			}
 			zoneID = zone.ID
 		}
 
-		_, err := s.Client().Zone.Delete(cmd.Context(), zoneID)
+		_, err = client.Zone.Delete(cmd.Context(), zoneID)
 		if err != nil {
 			return fmt.Errorf("failed to delete zone: %w", err)
 		}

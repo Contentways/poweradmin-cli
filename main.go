@@ -3,7 +3,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/contentways/poweradmin-cli/internal/cli"
@@ -14,11 +13,7 @@ func main() {
 	url := os.Getenv("POWERADMIN_URL")
 	apiKey := os.Getenv("POWERADMIN_API_KEY")
 
-	s, err := state.New(url, apiKey)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %s\n", err)
-		os.Exit(1)
-	}
+	s := state.New(url, apiKey)
 
 	root := cli.NewRootCommand(s)
 	cli.Execute(root)

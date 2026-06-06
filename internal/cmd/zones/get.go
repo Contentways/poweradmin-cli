@@ -18,6 +18,11 @@ var GetCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s := state.FromContext(cmd.Context())
 
+		client, err := s.Client()
+		if err != nil {
+			return fmt.Errorf("failed to create client: %w", err)
+		}
+
 		name, _ := cmd.Flags().GetString("name")
 		idStr, _ := cmd.Flags().GetString("id")
 
@@ -26,22 +31,21 @@ var GetCmd = &cobra.Command{
 		}
 
 		var zone *poweradmin.Zone
-		var err error
-
+		var getErr error
 		if idStr != "" {
 			id, err := strconv.Atoi(idStr)
 			if err != nil {
 				return fmt.Errorf("invalid id: %w", err)
 			}
-			zone, _, err = s.Client().Zone.GetByID(cmd.Context(), id)
+			zone, _, getErr = client.Zone.GetByID(cmd.Context(), id)
 		} else {
-			zone, _, err = s.Client().Zone.GetByName(cmd.Context(), name)
+			zone, _, getErr = client.Zone.GetByName(cmd.Context(), name)
 		}
-		if err != nil {
-			return fmt.Errorf("failed to get zone: %w", err)
+		if getErr != nil {
+			return fmt.Errorf("failed to get zone: %w", getErr)
 		}
 
-		records, err := s.Client().Record.All(cmd.Context(), zone.ID)
+		records, err := client.Record.All(cmd.Context(), zone.ID)
 		if err != nil {
 			return fmt.Errorf("failed to get records: %w", err)
 		}
