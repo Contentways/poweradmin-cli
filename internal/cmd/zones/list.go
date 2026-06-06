@@ -3,6 +3,7 @@
 package zones
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
@@ -29,6 +30,18 @@ var ListCmd = &cobra.Command{
 			return fmt.Errorf("failed to list zones: %w", err)
 		}
 
+		outputStr, _ := cmd.Flags().GetString("output")
+		outputFmt := output.ParseFormat(outputStr)
+
+		if outputFmt == output.FormatJSON {
+			data, err := json.MarshalIndent(zones, "", "  ")
+			if err != nil {
+				return fmt.Errorf("failed to marshal json: %w", err)
+			}
+			fmt.Println(string(data))
+			return nil
+		}
+
 		t := output.New(os.Stdout)
 		t.AddHeader("ID", "NAME", "TYPE")
 		for _, z := range zones {
@@ -38,4 +51,8 @@ var ListCmd = &cobra.Command{
 
 		return nil
 	},
+}
+
+func init() {
+	ListCmd.Flags().String("output", "table", "Output format. One of: json|table")
 }
