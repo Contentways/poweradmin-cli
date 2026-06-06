@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/contentways/poweradmin-cli/internal/output"
+	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
@@ -37,9 +38,9 @@ func NewListCmd() *cobra.Command {
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
-			// JSON output — print the raw zone list and return early.
+			// JSON output — print zones wrapped in a root object.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(zones, "", "  ")
+				data, err := json.MarshalIndent(schema.ZoneListFromSDK(zones), "", "  ")
 				if err != nil {
 					return fmt.Errorf("failed to marshal json: %w", err)
 				}

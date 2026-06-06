@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/contentways/poweradmin-cli/internal/output"
+	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
@@ -39,7 +40,7 @@ func NewListCmd() *cobra.Command {
 
 			// JSON output — print the raw user list and return early.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(users, "", "  ")
+				data, err := json.MarshalIndent(schema.UserListFromSDK(users), "", "  ")
 				if err != nil {
 					return fmt.Errorf("failed to marshal json: %w", err)
 				}

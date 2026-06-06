@@ -9,6 +9,7 @@ import (
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
 	"github.com/contentways/poweradmin-cli/internal/output"
+	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
@@ -71,13 +72,10 @@ func NewGetCmd() *cobra.Command {
 					}
 				}
 
-				// zoneJSON embeds the Zone struct and adds the resolved nameserver list.
-				type zoneJSON struct {
-					*poweradmin.Zone
-					Nameservers []string `json:"Nameservers"`
-				}
-
-				data, err := json.MarshalIndent(zoneJSON{Zone: zone, Nameservers: nameservers}, "", "  ")
+				data, err := json.MarshalIndent(schema.ZoneWithNameservers{
+					Zone:        schema.ZoneFromSDK(zone),
+					Nameservers: nameservers,
+				}, "", "  ")
 				if err != nil {
 					return fmt.Errorf("failed to marshal json: %w", err)
 				}
