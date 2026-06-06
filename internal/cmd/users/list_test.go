@@ -23,7 +23,7 @@ func TestUsersList(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewListCmd(), []string{})
 	if err != nil {
@@ -48,7 +48,7 @@ func TestUsersListJSON(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewListCmd(), []string{"--output", "json"})
 	if err != nil {
@@ -68,7 +68,7 @@ func TestUsersListError(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewListCmd(), []string{})
 	if err == nil {

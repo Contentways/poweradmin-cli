@@ -7,6 +7,7 @@ package cli
 import (
 	"os"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/groups"
 	"github.com/contentways/poweradmin-cli/internal/cmd/records"
 	"github.com/contentways/poweradmin-cli/internal/cmd/users"
 	"github.com/contentways/poweradmin-cli/internal/cmd/zones"
@@ -51,6 +52,7 @@ func NewRootCommand(s *state.State) *cobra.Command {
 	root.AddCommand(zones.NewZonesCommand())
 	root.AddCommand(records.NewRecordsCommand())
 	root.AddCommand(users.NewUsersCommand())
+	root.AddCommand(groups.NewGroupsCommand())
 
 	return root
 }

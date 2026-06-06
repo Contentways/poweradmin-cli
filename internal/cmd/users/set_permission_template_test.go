@@ -23,7 +23,7 @@ func TestUsersSetPermissionTemplate(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewSetPermissionTemplateCmd(), []string{
 		"--name", "max",
@@ -52,7 +52,7 @@ func TestUsersSetPermissionTemplateJSON(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewSetPermissionTemplateCmd(), []string{
 		"--name", "max",
@@ -73,7 +73,7 @@ func TestUsersSetPermissionTemplateJSON(t *testing.T) {
 }
 
 func TestUsersSetPermissionTemplateMissingFlags(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{})
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{}, nil)
 
 	err := fx.Run(users.NewSetPermissionTemplateCmd(), []string{})
 	if err == nil {
@@ -91,7 +91,7 @@ func TestUsersSetPermissionTemplateError(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewSetPermissionTemplateCmd(), []string{
 		"--name", "max",

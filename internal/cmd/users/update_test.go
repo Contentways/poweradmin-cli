@@ -23,7 +23,7 @@ func TestUsersUpdate(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewUpdateCmd(), []string{
 		"--name", "max",
@@ -49,7 +49,7 @@ func TestUsersUpdateJSON(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewUpdateCmd(), []string{
 		"--name", "max",
@@ -67,7 +67,7 @@ func TestUsersUpdateJSON(t *testing.T) {
 }
 
 func TestUsersUpdateMissingFlags(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{})
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{}, nil)
 
 	err := fx.Run(users.NewUpdateCmd(), []string{})
 	if err == nil {
@@ -85,7 +85,7 @@ func TestUsersUpdateError(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewUpdateCmd(), []string{
 		"--name", "max",

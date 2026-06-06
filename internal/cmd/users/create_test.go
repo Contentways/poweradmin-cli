@@ -20,7 +20,7 @@ func TestUsersCreate(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewCreateCmd(), []string{
 		"--username", "max",
@@ -47,7 +47,7 @@ func TestUsersCreateJSON(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewCreateCmd(), []string{
 		"--username", "max",
@@ -69,7 +69,7 @@ func TestUsersCreateJSON(t *testing.T) {
 }
 
 func TestUsersCreateMissingUsername(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{})
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{}, nil)
 
 	err := fx.Run(users.NewCreateCmd(), []string{
 		"--password", "secret123",
@@ -87,7 +87,7 @@ func TestUsersCreateError(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
 	err := fx.Run(users.NewCreateCmd(), []string{
 		"--username", "max",
