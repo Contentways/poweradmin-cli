@@ -1,0 +1,19 @@
+name: Releaser-pleaser
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: releaser-pleaser
+  cancel-in-progress: true
+
+jobs:
+  releaser-pleaser:
+    if: github.repository == 'Contentways/poweradmin-cli'
+    runs-on: ubuntu-latest
+    steps:
+      - name: releaser-pleaser
+        uses: apricote/releaser-pleaser@v0.8.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
