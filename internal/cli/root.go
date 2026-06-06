@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/contentways/poweradmin-cli/internal/cmd/records"
+	"github.com/contentways/poweradmin-cli/internal/cmd/users"
 	"github.com/contentways/poweradmin-cli/internal/cmd/zones"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
@@ -49,6 +50,7 @@ func NewRootCommand(s *state.State) *cobra.Command {
 	// Register all resource subcommands.
 	root.AddCommand(zones.NewZonesCommand())
 	root.AddCommand(records.NewRecordsCommand())
+	root.AddCommand(users.NewUsersCommand())
 
 	return root
 }

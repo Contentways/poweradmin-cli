@@ -1,0 +1,90 @@
+// Copyright (c) 2026 Contentways
+// SPDX-License-Identifier: MIT
+package users
+
+import (
+	"encoding/json"
+	"fmt"
+
+	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
+	"github.com/contentways/poweradmin-cli/internal/output"
+	"github.com/contentways/poweradmin-cli/internal/state"
+	"github.com/spf13/cobra"
+)
+
+// NewCreateCmd returns a new "users create" command instance.
+// A new instance is returned on each call to prevent flag state from leaking
+// between successive command executions.
+// Output can be a human-readable confirmation (default) or JSON
+// containing the new user's ID and username.
+func NewCreateCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create",
+		Short: "Create a new user",
+		Long:  `Create a new user in Poweradmin.`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			s := state.FromContext(cmd.Context())
+
+			username, _ := cmd.Flags().GetString("username")
+			password, _ := cmd.Flags().GetString("password")
+			email, _ := cmd.Flags().GetString("email")
+			fullname, _ := cmd.Flags().GetString("fullname")
+			active, _ := cmd.Flags().GetBool("active")
+
+			if username == "" {
+				return fmt.Errorf("--username is required")
+			}
+			if password == "" {
+				return fmt.Errorf("--password is required")
+			}
+			if email == "" {
+				return fmt.Errorf("--email is required")
+			}
+
+			client, err := s.Client()
+			if err != nil {
+				return fmt.Errorf("failed to create client: %w", err)
+			}
+
+			id, _, err := client.User.Create(cmd.Context(), poweradmin.UserCreateOpts{
+				Username: username,
+				Password: password,
+				Email:    email,
+				Fullname: fullname,
+				Active:   active,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to create user: %w", err)
+			}
+
+			outputStr, _ := cmd.Flags().GetString("output")
+			outputFmt := output.ParseFormat(outputStr)
+
+			// JSON output — return the new user's ID and username.
+			if outputFmt == output.FormatJSON {
+				data, err := json.MarshalIndent(map[string]any{
+					"id":       id,
+					"username": username,
+					"email":    email,
+				}, "", "  ")
+				if err != nil {
+					return fmt.Errorf("failed to marshal json: %w", err)
+				}
+				fmt.Fprintln(cmd.OutOrStdout(), string(data))
+				return nil
+			}
+
+			// Default output — human-readable confirmation.
+			fmt.Fprintf(cmd.OutOrStdout(), "created user %s (id %d)\n", username, id)
+			return nil
+		},
+	}
+
+	cmd.Flags().String("username", "", "Username (required)")
+	cmd.Flags().String("password", "", "Password (required)")
+	cmd.Flags().String("email", "", "Email address (required)")
+	cmd.Flags().String("fullname", "", "Full name")
+	cmd.Flags().Bool("active", true, "Whether the user is active (default: true)")
+	cmd.Flags().String("output", "table", "Output format. One of: table|json")
+	return cmd
+}
