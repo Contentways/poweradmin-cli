@@ -3,10 +3,12 @@
 package zones
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
+	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
@@ -17,7 +19,6 @@ var GetCmd = &cobra.Command{
 	Long:  `Get a DNS zone by name or ID from Poweradmin.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s := state.FromContext(cmd.Context())
-
 		client, err := s.Client()
 		if err != nil {
 			return fmt.Errorf("failed to create client: %w", err)
@@ -45,6 +46,35 @@ var GetCmd = &cobra.Command{
 			return fmt.Errorf("failed to get zone: %w", getErr)
 		}
 
+		outputStr, _ := cmd.Flags().GetString("output")
+		outputFmt := output.ParseFormat(outputStr)
+
+		if outputFmt == output.FormatJSON {
+			records, err := client.Record.All(cmd.Context(), zone.ID)
+			if err != nil {
+				return fmt.Errorf("failed to get records: %w", err)
+			}
+
+			var nameservers []string
+			for _, r := range records {
+				if r.Type == "NS" {
+					nameservers = append(nameservers, r.Content)
+				}
+			}
+
+			type zoneJSON struct {
+				*poweradmin.Zone
+				Nameservers []string `json:"Nameservers"`
+			}
+
+			data, err := json.MarshalIndent(zoneJSON{Zone: zone, Nameservers: nameservers}, "", "  ")
+			if err != nil {
+				return fmt.Errorf("failed to marshal json: %w", err)
+			}
+			fmt.Println(string(data))
+			return nil
+		}
+
 		records, err := client.Record.All(cmd.Context(), zone.ID)
 		if err != nil {
 			return fmt.Errorf("failed to get records: %w", err)
@@ -56,14 +86,12 @@ var GetCmd = &cobra.Command{
 		if zone.Masters != "" {
 			fmt.Printf("Masters: %s\n", zone.Masters)
 		}
-
 		fmt.Println("Nameservers:")
 		for _, r := range records {
 			if r.Type == "NS" {
 				fmt.Printf("  %s\n", r.Content)
 			}
 		}
-
 		return nil
 	},
 }
@@ -71,4 +99,5 @@ var GetCmd = &cobra.Command{
 func init() {
 	GetCmd.Flags().String("name", "", "Zone name (e.g. example.com)")
 	GetCmd.Flags().String("id", "", "Zone ID")
+	GetCmd.Flags().String("output", "table", "Output format: table, full, json")
 }
