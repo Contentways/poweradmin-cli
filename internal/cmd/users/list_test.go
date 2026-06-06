@@ -17,7 +17,7 @@ func TestUsersList(t *testing.T) {
 	mockUser := &testutil.MockUserClient{
 		AllFn: func(ctx context.Context) ([]*poweradmin.User, error) {
 			return []*poweradmin.User{
-				{ID: 1, Username: "patrick", Email: "patrick@example.com", Active: true},
+				{ID: 1, Username: "max", Email: "max@example.com", Active: true},
 				{ID: 2, Username: "markus", Email: "markus@example.com", Active: false},
 			}, nil
 		},
@@ -31,8 +31,8 @@ func TestUsersList(t *testing.T) {
 	}
 
 	out := fx.Stdout.String()
-	if !strings.Contains(out, "patrick") {
-		t.Errorf("expected output to contain patrick, got:\n%s", out)
+	if !strings.Contains(out, "max") {
+		t.Errorf("expected output to contain max, got:\n%s", out)
 	}
 	if !strings.Contains(out, "markus") {
 		t.Errorf("expected output to contain markus, got:\n%s", out)
@@ -43,7 +43,7 @@ func TestUsersListJSON(t *testing.T) {
 	mockUser := &testutil.MockUserClient{
 		AllFn: func(ctx context.Context) ([]*poweradmin.User, error) {
 			return []*poweradmin.User{
-				{ID: 1, Username: "patrick", Email: "patrick@example.com", Active: true},
+				{ID: 1, Username: "max", Email: "max@example.com", Active: true},
 			}, nil
 		},
 	}
@@ -56,8 +56,8 @@ func TestUsersListJSON(t *testing.T) {
 	}
 
 	out := fx.Stdout.String()
-	if !strings.Contains(out, `"Username": "patrick"`) {
-		t.Errorf("expected JSON to contain patrick, got:\n%s", out)
+	if !strings.Contains(out, `"Username": "max"`) {
+		t.Errorf("expected JSON to contain max, got:\n%s", out)
 	}
 }
 

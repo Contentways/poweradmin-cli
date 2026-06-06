@@ -73,7 +73,7 @@ func TestUsersCreateMissingUsername(t *testing.T) {
 
 	err := fx.Run(users.NewCreateCmd(), []string{
 		"--password", "secret123",
-		"--email", "patrick@example.com",
+		"--email", "max@example.com",
 	})
 	if err == nil {
 		t.Fatal("expected error when username is missing")
