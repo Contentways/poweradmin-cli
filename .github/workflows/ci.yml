@@ -40,11 +40,11 @@ jobs:
       - name: Run tests
         run: go test -coverpkg=./internal/... -coverprofile=coverage.txt -v -race ./...
 
-      - name: Upload coverage
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: unit
+      # - name: Upload coverage
+      #   uses: codecov/codecov-action@v4
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     flags: unit
 
   go-mod-tidy:
     runs-on: ubuntu-latest
