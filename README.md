@@ -150,27 +150,32 @@ poweradmin users list
 poweradmin users list --output json
 
 # Get a user by name or ID
-poweradmin users get --name patrick
+poweradmin users get --name max
 poweradmin users get --id 1
-poweradmin users get --name patrick --output json
+poweradmin users get --name max --output json
 
-# Create a user
+# Create a user (password will be prompted)
 poweradmin users create \
-  --username patrick \
+  --username max \
+  --email max@example.com \
+  --fullname "Max Mustermann
+
+# Create a user with password via flag (not recommended — visible in shell history)
+poweradmin users create \
+  --username max \
   --password secret123 \
-  --email patrick@example.com \
-  --fullname "Patrick Omland"
+  --email max@example.com
 
 # Update a user
-poweradmin users update --name patrick --email new@example.com
+poweradmin users update --name max --email new@example.com
 poweradmin users update --id 1 --active=false
 
 # Delete a user
-poweradmin users delete --name patrick
+poweradmin users delete --name max
 poweradmin users delete --id 1
 
 # Assign a permission template
-poweradmin users set-permission-template --name patrick --template-id 2
+poweradmin users set-permission-template --name max --template-id 2
 ```
 
 ## Output Formats

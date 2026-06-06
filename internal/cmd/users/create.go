@@ -5,11 +5,13 @@ package users
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 )
 
 // NewCreateCmd returns a new "users create" command instance.
@@ -34,11 +36,33 @@ func NewCreateCmd() *cobra.Command {
 			if username == "" {
 				return fmt.Errorf("--username is required")
 			}
-			if password == "" {
-				return fmt.Errorf("--password is required")
-			}
 			if email == "" {
 				return fmt.Errorf("--email is required")
+			}
+
+			if password == "" {
+				fmt.Fprint(cmd.OutOrStdout(), "Password: ")
+				pw, err := term.ReadPassword(int(os.Stdin.Fd()))
+				if err != nil {
+					return fmt.Errorf("failed to read password: %w", err)
+				}
+				fmt.Fprintln(cmd.OutOrStdout())
+
+				fmt.Fprint(cmd.OutOrStdout(), "Confirm password: ")
+				pw2, err := term.ReadPassword(int(os.Stdin.Fd()))
+				if err != nil {
+					return fmt.Errorf("failed to read password confirmation: %w", err)
+				}
+				fmt.Fprintln(cmd.OutOrStdout())
+
+				if string(pw) != string(pw2) {
+					return fmt.Errorf("passwords do not match")
+				}
+
+				password = string(pw)
+				if password == "" {
+					return fmt.Errorf("password is required")
+				}
 			}
 
 			client, err := s.Client()
@@ -81,7 +105,7 @@ func NewCreateCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String("username", "", "Username (required)")
-	cmd.Flags().String("password", "", "Password (required)")
+	cmd.Flags().String("password", "", "Password (prompted if not provided)")
 	cmd.Flags().String("email", "", "Email address (required)")
 	cmd.Flags().String("fullname", "", "Full name")
 	cmd.Flags().Bool("active", true, "Whether the user is active (default: true)")
