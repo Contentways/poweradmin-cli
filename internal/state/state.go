@@ -18,7 +18,14 @@ import (
 type State struct {
 	URL    string
 	APIKey string
+	// MockClient is used in tests to inject a mock client.
+	// If nil, a real client is built from URL and APIKey.
+	MockClient *poweradmin.Client
 }
+
+// ClientProvider is a function that returns a Poweradmin client.
+// In production it builds a real client; in tests it returns a mock.
+type ClientProvider func() (*poweradmin.Client, error)
 
 // New creates a new State with the given Poweradmin instance URL and API key.
 func New(url, apiKey string) *State {
@@ -32,6 +39,9 @@ func New(url, apiKey string) *State {
 // URL and APIKey. A new client is created on each call — credentials may
 // have been updated by a CLI flag after State was initialized.
 func (s *State) Client() (*poweradmin.Client, error) {
+	if s.MockClient != nil {
+		return s.MockClient, nil
+	}
 	return poweradmin.NewClient(
 		poweradmin.WithBaseURL(s.URL),
 		poweradmin.WithAPIKey(s.APIKey),

@@ -84,12 +84,12 @@ var CreateCmd = &cobra.Command{
 			if err != nil {
 				return fmt.Errorf("failed to marshal json: %w", err)
 			}
-			fmt.Println(string(data))
+			fmt.Fprintln(cmd.OutOrStdout(), string(data))
 			return nil
 		}
 
 		// Default output — human-readable confirmation.
-		fmt.Printf("created record %s %s %s (id %s)\n", name, recordType, content, id)
+		fmt.Fprintf(cmd.OutOrStdout(), "created record %s %s %s (id %s)\n", name, recordType, content, id)
 		return nil
 	},
 }

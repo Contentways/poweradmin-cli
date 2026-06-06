@@ -78,7 +78,7 @@ var GetCmd = &cobra.Command{
 			if err != nil {
 				return fmt.Errorf("failed to marshal json: %w", err)
 			}
-			fmt.Println(string(data))
+			fmt.Fprintln(cmd.OutOrStdout(), string(data))
 			return nil
 		}
 
@@ -88,17 +88,16 @@ var GetCmd = &cobra.Command{
 			return fmt.Errorf("failed to get records: %w", err)
 		}
 
-		fmt.Printf("ID:   %d\n", zone.ID)
-		fmt.Printf("Name: %s\n", zone.Name)
-		fmt.Printf("Type: %s\n", zone.Type)
+		fmt.Fprintf(cmd.OutOrStdout(), "ID:   %d\n", zone.ID)
+		fmt.Fprintf(cmd.OutOrStdout(), "Name: %s\n", zone.Name)
+		fmt.Fprintf(cmd.OutOrStdout(), "Type: %s\n", zone.Type)
 		if zone.Masters != "" {
-			fmt.Printf("Masters: %s\n", zone.Masters)
+			fmt.Fprintf(cmd.OutOrStdout(), "Masters: %s\n", zone.Masters)
 		}
-
-		fmt.Println("Nameservers:")
+		fmt.Fprintln(cmd.OutOrStdout(), "Nameservers:")
 		for _, r := range records {
 			if r.Type == "NS" {
-				fmt.Printf("  %s\n", r.Content)
+				fmt.Fprintf(cmd.OutOrStdout(), "  %s\n", r.Content)
 			}
 		}
 

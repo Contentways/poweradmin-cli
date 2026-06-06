@@ -52,12 +52,12 @@ var CreateCmd = &cobra.Command{
 			if err != nil {
 				return fmt.Errorf("failed to marshal json: %w", err)
 			}
-			fmt.Println(string(data))
+			fmt.Fprintln(cmd.OutOrStdout(), string(data))
 			return nil
 		}
 
 		// Default output — human-readable confirmation.
-		fmt.Printf("created zone %s (id %d)\n", args[0], id)
+		fmt.Fprintf(cmd.OutOrStdout(), "created zone %s (id %d)\n", args[0], id)
 		return nil
 	},
 }

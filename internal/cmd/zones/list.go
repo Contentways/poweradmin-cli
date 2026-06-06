@@ -5,7 +5,6 @@ package zones
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/contentways/poweradmin-cli/internal/output"
@@ -41,12 +40,12 @@ var ListCmd = &cobra.Command{
 			if err != nil {
 				return fmt.Errorf("failed to marshal json: %w", err)
 			}
-			fmt.Println(string(data))
+			fmt.Fprintln(cmd.OutOrStdout(), string(data))
 			return nil
 		}
 
 		// Table output — render an aligned table with ID, name and type columns.
-		t := output.New(os.Stdout)
+		t := output.New(cmd.OutOrStdout())
 		t.AddHeader("ID", "NAME", "TYPE")
 		for _, z := range zones {
 			t.AddRow(strconv.Itoa(z.ID), z.Name, string(z.Type))

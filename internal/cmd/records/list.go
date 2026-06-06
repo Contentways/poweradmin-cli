@@ -5,7 +5,6 @@ package records
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/contentways/poweradmin-cli/internal/output"
@@ -63,14 +62,14 @@ var ListCmd = &cobra.Command{
 			if err != nil {
 				return fmt.Errorf("failed to marshal json: %w", err)
 			}
-			fmt.Println(string(data))
+			fmt.Fprintln(cmd.OutOrStdout(), string(data))
 			return nil
 		}
 
 		// Table output — render an aligned table with NAME, TYPE, CONTENT and TTL.
 		// In default table mode, long content values are truncated to 50 characters
 		// to keep the output readable. Use --output full to see the complete content.
-		t := output.New(os.Stdout)
+		t := output.New(cmd.OutOrStdout())
 		t.AddHeader("NAME", "TYPE", "CONTENT", "TTL")
 		for _, r := range records {
 			content := r.Content

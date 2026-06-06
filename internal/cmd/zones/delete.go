@@ -70,12 +70,12 @@ var DeleteCmd = &cobra.Command{
 			if err != nil {
 				return fmt.Errorf("failed to marshal json: %w", err)
 			}
-			fmt.Println(string(data))
+			fmt.Fprintln(cmd.OutOrStdout(), string(data))
 			return nil
 		}
 
 		// Default output — human-readable confirmation.
-		fmt.Printf("deleted zone %s (id %d)\n", name, zoneID)
+		fmt.Fprintf(cmd.OutOrStdout(), "deleted zone %s (id %d)\n", name, zoneID)
 		return nil
 	},
 }
