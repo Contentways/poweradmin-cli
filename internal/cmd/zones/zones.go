@@ -19,10 +19,10 @@ func NewZonesCommand() *cobra.Command {
 		Long:  `Manage DNS zones in Poweradmin — list, get, create and delete zones.`,
 	}
 
-	cmd.AddCommand(ListCmd)
-	cmd.AddCommand(GetCmd)
-	cmd.AddCommand(CreateCmd)
-	cmd.AddCommand(DeleteCmd)
+	cmd.AddCommand(NewListCmd())
+	cmd.AddCommand(NewGetCmd())
+	cmd.AddCommand(NewCreateCmd())
+	cmd.AddCommand(NewDeleteCmd())
 
 	return cmd
 }

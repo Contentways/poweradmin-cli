@@ -4,6 +4,7 @@ package records_test
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -26,7 +27,7 @@ func TestRecordsDelete(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(records.DeleteCmd, []string{
+	err := fx.Run(records.NewDeleteCmd(), []string{
 		"--zone-name", "example.com",
 		"--id", "rec-42",
 	})
@@ -54,7 +55,7 @@ func TestRecordsDeleteJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(records.DeleteCmd, []string{
+	err := fx.Run(records.NewDeleteCmd(), []string{
 		"--zone-name", "example.com",
 		"--id", "rec-42",
 		"--output", "json",
@@ -66,5 +67,34 @@ func TestRecordsDeleteJSON(t *testing.T) {
 	out := fx.Stdout.String()
 	if !strings.Contains(out, `"id": "rec-42"`) {
 		t.Errorf("expected JSON to contain rec-42, got:\n%s", out)
+	}
+}
+
+func TestRecordsDeleteMissingFlags(t *testing.T) {
+	fx := testutil.NewFixtureWithMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{})
+	err := fx.Run(records.NewDeleteCmd(), []string{})
+	if err == nil {
+		t.Fatal("expected error when no flags provided")
+	}
+}
+
+func TestRecordsDeleteError(t *testing.T) {
+	mockZone := &testutil.MockZoneClient{
+		GetByNameFn: func(ctx context.Context, name string) (*poweradmin.Zone, *poweradmin.Response, error) {
+			return &poweradmin.Zone{ID: 1, Name: name}, nil, nil
+		},
+	}
+	mockRecord := &testutil.MockRecordClient{
+		DeleteFn: func(ctx context.Context, zoneID int, recordID string) (*poweradmin.Response, error) {
+			return nil, fmt.Errorf("api error")
+		},
+	}
+	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
+	err := fx.Run(records.NewDeleteCmd(), []string{
+		"--zone-name", "example.com",
+		"--id", "rec-42",
+	})
+	if err == nil {
+		t.Fatal("expected error, got nil")
 	}
 }

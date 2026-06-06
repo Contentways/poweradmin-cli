@@ -19,9 +19,9 @@ func NewRecordsCommand() *cobra.Command {
 		Long:  `Manage DNS records in Poweradmin — list, create and delete records.`,
 	}
 
-	cmd.AddCommand(ListCmd)
-	cmd.AddCommand(CreateCmd)
-	cmd.AddCommand(DeleteCmd)
+	cmd.AddCommand(NewListCmd())
+	cmd.AddCommand(NewCreateCmd())
+	cmd.AddCommand(NewDeleteCmd())
 
 	return cmd
 }

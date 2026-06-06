@@ -12,57 +12,60 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// CreateCmd creates a new DNS zone in Poweradmin.
+// NewCreateCmd returns a new "zones create" command instance.
+// A new instance is returned on each call to prevent flag state from leaking
+// between successive command executions.
 // The zone name is passed as a positional argument.
 // Output can be a human-readable confirmation (default) or JSON
 // containing the new zone's ID, name and type.
-var CreateCmd = &cobra.Command{
-	Use:   "create <name>",
-	Short: "Create a DNS zone",
-	Long:  `Create a new DNS zone in Poweradmin.`,
-	Args:  cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		s := state.FromContext(cmd.Context())
+func NewCreateCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create <name>",
+		Short: "Create a DNS zone",
+		Long:  `Create a new DNS zone in Poweradmin.`,
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			s := state.FromContext(cmd.Context())
 
-		zoneType, _ := cmd.Flags().GetString("type")
+			zoneType, _ := cmd.Flags().GetString("type")
 
-		client, err := s.Client()
-		if err != nil {
-			return fmt.Errorf("failed to create client: %w", err)
-		}
-
-		id, _, err := client.Zone.Create(cmd.Context(), poweradmin.ZoneCreateOpts{
-			Name: args[0],
-			Type: poweradmin.ZoneType(zoneType),
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create zone: %w", err)
-		}
-
-		outputStr, _ := cmd.Flags().GetString("output")
-		outputFmt := output.ParseFormat(outputStr)
-
-		// JSON output — return the new zone's ID, name and type.
-		if outputFmt == output.FormatJSON {
-			data, err := json.MarshalIndent(map[string]any{
-				"id":   id,
-				"name": args[0],
-				"type": zoneType,
-			}, "", "  ")
+			client, err := s.Client()
 			if err != nil {
-				return fmt.Errorf("failed to marshal json: %w", err)
+				return fmt.Errorf("failed to create client: %w", err)
 			}
-			fmt.Fprintln(cmd.OutOrStdout(), string(data))
+
+			id, _, err := client.Zone.Create(cmd.Context(), poweradmin.ZoneCreateOpts{
+				Name: args[0],
+				Type: poweradmin.ZoneType(zoneType),
+			})
+			if err != nil {
+				return fmt.Errorf("failed to create zone: %w", err)
+			}
+
+			outputStr, _ := cmd.Flags().GetString("output")
+			outputFmt := output.ParseFormat(outputStr)
+
+			// JSON output — return the new zone's ID, name and type.
+			if outputFmt == output.FormatJSON {
+				data, err := json.MarshalIndent(map[string]any{
+					"id":   id,
+					"name": args[0],
+					"type": zoneType,
+				}, "", "  ")
+				if err != nil {
+					return fmt.Errorf("failed to marshal json: %w", err)
+				}
+				fmt.Fprintln(cmd.OutOrStdout(), string(data))
+				return nil
+			}
+
+			// Default output — human-readable confirmation.
+			fmt.Fprintf(cmd.OutOrStdout(), "created zone %s (id %d)\n", args[0], id)
 			return nil
-		}
+		},
+	}
 
-		// Default output — human-readable confirmation.
-		fmt.Fprintf(cmd.OutOrStdout(), "created zone %s (id %d)\n", args[0], id)
-		return nil
-	},
-}
-
-func init() {
-	CreateCmd.Flags().String("type", "NATIVE", "Zone type. One of: NATIVE|MASTER|SLAVE")
-	CreateCmd.Flags().String("output", "table", "Output format. One of: table|json")
+	cmd.Flags().String("type", "NATIVE", "Zone type. One of: NATIVE|MASTER|SLAVE")
+	cmd.Flags().String("output", "table", "Output format. One of: table|json")
+	return cmd
 }

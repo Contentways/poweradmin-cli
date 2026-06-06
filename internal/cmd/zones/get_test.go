@@ -4,6 +4,7 @@ package zones_test
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -28,7 +29,7 @@ func TestZonesGetByName(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(zones.GetCmd, []string{"--name", "example.com"})
+	err := fx.Run(zones.NewGetCmd(), []string{"--name", "example.com"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -58,7 +59,7 @@ func TestZonesGetByNameJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(zones.GetCmd, []string{"--name", "example.com", "--output", "json"})
+	err := fx.Run(zones.NewGetCmd(), []string{"--name", "example.com", "--output", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -69,5 +70,26 @@ func TestZonesGetByNameJSON(t *testing.T) {
 	}
 	if !strings.Contains(out, "ns1.example.com") {
 		t.Errorf("expected JSON to contain ns1.example.com, got:\n%s", out)
+	}
+}
+
+func TestZonesGetMissingFlags(t *testing.T) {
+	fx := testutil.NewFixtureWithMocks(t, &testutil.MockZoneClient{}, nil)
+	err := fx.Run(zones.NewGetCmd(), []string{})
+	if err == nil {
+		t.Fatal("expected error when no flags provided")
+	}
+}
+
+func TestZonesGetByNameError(t *testing.T) {
+	mockZone := &testutil.MockZoneClient{
+		GetByNameFn: func(ctx context.Context, name string) (*poweradmin.Zone, *poweradmin.Response, error) {
+			return nil, nil, fmt.Errorf("api error")
+		},
+	}
+	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
+	err := fx.Run(zones.NewGetCmd(), []string{"--name", "example.com"})
+	if err == nil {
+		t.Fatal("expected error, got nil")
 	}
 }

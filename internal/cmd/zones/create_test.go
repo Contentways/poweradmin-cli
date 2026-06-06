@@ -4,6 +4,7 @@ package zones_test
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -21,7 +22,7 @@ func TestZonesCreate(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
 
-	err := fx.Run(zones.CreateCmd, []string{"example.com"})
+	err := fx.Run(zones.NewCreateCmd(), []string{"example.com"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -44,7 +45,7 @@ func TestZonesCreateJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
 
-	err := fx.Run(zones.CreateCmd, []string{"example.com", "--output", "json"})
+	err := fx.Run(zones.NewCreateCmd(), []string{"example.com", "--output", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -55,5 +56,18 @@ func TestZonesCreateJSON(t *testing.T) {
 	}
 	if !strings.Contains(out, `"id": 42`) {
 		t.Errorf("expected JSON to contain id 42, got:\n%s", out)
+	}
+}
+
+func TestZonesCreateError(t *testing.T) {
+	mockZone := &testutil.MockZoneClient{
+		CreateFn: func(ctx context.Context, opts poweradmin.ZoneCreateOpts) (int, *poweradmin.Response, error) {
+			return 0, nil, fmt.Errorf("api error")
+		},
+	}
+	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
+	err := fx.Run(zones.NewCreateCmd(), []string{"example.com"})
+	if err == nil {
+		t.Fatal("expected error, got nil")
 	}
 }

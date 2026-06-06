@@ -59,8 +59,12 @@ func (s *State) WithContext(ctx context.Context) context.Context {
 type stateKey struct{}
 
 // FromContext retrieves the State from the given context.
-// Returns nil if no State was set — callers should handle this case.
+// Returns an empty State if no State was set — prevents nil pointer dereferences
+// in commands when the context has not been initialized.
 func FromContext(ctx context.Context) *State {
-	s, _ := ctx.Value(stateKey{}).(*State)
+	s, ok := ctx.Value(stateKey{}).(*State)
+	if !ok || s == nil {
+		return &State{}
+	}
 	return s
 }

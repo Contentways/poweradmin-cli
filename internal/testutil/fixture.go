@@ -69,5 +69,10 @@ func (f *Fixture) Run(cmd *cobra.Command, args []string) error {
 	cmd.SetOut(f.Stdout)
 	cmd.SetErr(f.Stderr)
 	cmd.SetArgs(args)
+
+	// Disable usage printing on error to keep test output clean.
+	cmd.SilenceUsage = true
+	cmd.SilenceErrors = true
+
 	return cmd.Execute()
 }

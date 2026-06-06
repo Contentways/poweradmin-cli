@@ -4,6 +4,7 @@ package records_test
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -29,7 +30,7 @@ func TestRecordsList(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(records.ListCmd, []string{"--zone-name", "example.com"})
+	err := fx.Run(records.NewListCmd(), []string{"--zone-name", "example.com"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -59,7 +60,7 @@ func TestRecordsListJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(records.ListCmd, []string{"--zone-name", "example.com", "--output", "json"})
+	err := fx.Run(records.NewListCmd(), []string{"--zone-name", "example.com", "--output", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -67,5 +68,31 @@ func TestRecordsListJSON(t *testing.T) {
 	out := fx.Stdout.String()
 	if !strings.Contains(out, `"Name": "www.example.com"`) {
 		t.Errorf("expected JSON to contain www.example.com, got:\n%s", out)
+	}
+}
+
+func TestRecordsListMissingFlags(t *testing.T) {
+	fx := testutil.NewFixtureWithMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{})
+	err := fx.Run(records.NewListCmd(), []string{})
+	if err == nil {
+		t.Fatal("expected error when no flags provided")
+	}
+}
+
+func TestRecordsListError(t *testing.T) {
+	mockZone := &testutil.MockZoneClient{
+		GetByNameFn: func(ctx context.Context, name string) (*poweradmin.Zone, *poweradmin.Response, error) {
+			return &poweradmin.Zone{ID: 1, Name: name}, nil, nil
+		},
+	}
+	mockRecord := &testutil.MockRecordClient{
+		AllFn: func(ctx context.Context, zoneID int) ([]*poweradmin.Record, error) {
+			return nil, fmt.Errorf("api error")
+		},
+	}
+	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
+	err := fx.Run(records.NewListCmd(), []string{"--zone-name", "example.com"})
+	if err == nil {
+		t.Fatal("expected error, got nil")
 	}
 }

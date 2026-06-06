@@ -4,6 +4,7 @@ package zones_test
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -26,7 +27,7 @@ func TestZonesList(t *testing.T) {
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
 
 	// Act — run the list command.
-	err := fx.Run(zones.ListCmd, []string{})
+	err := fx.Run(zones.NewListCmd(), []string{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -52,7 +53,7 @@ func TestZonesListJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
 
-	err := fx.Run(zones.ListCmd, []string{"--output", "json"})
+	err := fx.Run(zones.NewListCmd(), []string{"--output", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -60,5 +61,18 @@ func TestZonesListJSON(t *testing.T) {
 	out := fx.Stdout.String()
 	if !strings.Contains(out, `"Name": "example.com"`) {
 		t.Errorf("expected JSON output to contain example.com, got:\n%s", out)
+	}
+}
+
+func TestZonesListError(t *testing.T) {
+	mockZone := &testutil.MockZoneClient{
+		AllFn: func(ctx context.Context) ([]*poweradmin.Zone, error) {
+			return nil, fmt.Errorf("api error")
+		},
+	}
+	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
+	err := fx.Run(zones.NewListCmd(), []string{})
+	if err == nil {
+		t.Fatal("expected error, got nil")
 	}
 }
