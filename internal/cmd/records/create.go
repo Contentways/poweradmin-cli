@@ -3,10 +3,12 @@
 package records
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
+	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
@@ -59,6 +61,25 @@ var CreateCmd = &cobra.Command{
 			return fmt.Errorf("failed to create record: %w", err)
 		}
 
+		outputStr, _ := cmd.Flags().GetString("output")
+		outputFmt := output.ParseFormat(outputStr)
+
+		if outputFmt == output.FormatJSON {
+			data, err := json.MarshalIndent(map[string]any{
+				"id":      id,
+				"name":    name,
+				"type":    recordType,
+				"content": content,
+				"ttl":     ttl,
+				"zone_id": zoneID,
+			}, "", "  ")
+			if err != nil {
+				return fmt.Errorf("failed to marshal json: %w", err)
+			}
+			fmt.Println(string(data))
+			return nil
+		}
+
 		fmt.Printf("created record %s %s %s (id %s)\n", name, recordType, content, id)
 		return nil
 	},
@@ -72,4 +93,5 @@ func init() {
 	CreateCmd.Flags().String("content", "", "Record content")
 	CreateCmd.Flags().Int("ttl", 3600, "Time to live in seconds")
 	CreateCmd.Flags().Int("priority", 0, "Record priority (for MX records)")
+	CreateCmd.Flags().String("output", "table", "Output format: table, json")
 }
