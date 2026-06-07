@@ -5,6 +5,7 @@ package users
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/contentways/poweradmin-cli/internal/output"
@@ -57,6 +58,18 @@ func NewDeleteCmd() *cobra.Command {
 				username = user.Username
 			}
 
+			// Confirm deletion unless --yes flag is set.
+			yes, _ := cmd.Flags().GetBool("yes")
+			if !yes {
+				fmt.Fprintf(cmd.OutOrStdout(), "Delete record (id %d)? [y/N] ", userID)
+				var confirm string
+				fmt.Fscan(os.Stdin, &confirm)
+				if confirm != "y" && confirm != "Y" {
+					fmt.Fprintln(cmd.OutOrStdout(), "Aborted.")
+					return nil
+				}
+			}
+
 			_, err = client.User.Delete(cmd.Context(), userID)
 			if err != nil {
 				return fmt.Errorf("failed to delete user: %w", err)
@@ -87,5 +100,6 @@ func NewDeleteCmd() *cobra.Command {
 	cmd.Flags().String("name", "", "Username to identify the user")
 	cmd.Flags().String("id", "", "User ID to identify the user")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
 	return cmd
 }

@@ -5,6 +5,7 @@ package records
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/contentways/poweradmin-cli/internal/output"
@@ -60,6 +61,18 @@ func NewDeleteCmd() *cobra.Command {
 				zoneID = zone.ID
 			}
 
+			// Confirm deletion unless --yes flag is set.
+			yes, _ := cmd.Flags().GetBool("yes")
+			if !yes {
+				fmt.Fprintf(cmd.OutOrStdout(), "Delete record (id %s)? [y/N] ", recordID)
+				var confirm string
+				fmt.Fscan(os.Stdin, &confirm)
+				if confirm != "y" && confirm != "Y" {
+					fmt.Fprintln(cmd.OutOrStdout(), "Aborted.")
+					return nil
+				}
+			}
+
 			_, err = client.Record.Delete(cmd.Context(), zoneID, recordID)
 			if err != nil {
 				return fmt.Errorf("failed to delete record: %w", err)
@@ -91,5 +104,6 @@ func NewDeleteCmd() *cobra.Command {
 	cmd.Flags().String("zone-id", "", "Zone ID")
 	cmd.Flags().String("id", "", "Record ID (opaque string returned by the API)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
 	return cmd
 }

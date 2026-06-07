@@ -5,6 +5,7 @@ package groups
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/contentways/poweradmin-cli/internal/output"
@@ -50,6 +51,18 @@ func NewDeleteCmd() *cobra.Command {
 				groupName = group.Name
 			}
 
+			// Confirm deletion unless --yes flag is set.
+			yes, _ := cmd.Flags().GetBool("yes")
+			if !yes {
+				fmt.Fprintf(cmd.OutOrStdout(), "Delete record (id %d)? [y/N] ", groupID)
+				var confirm string
+				fmt.Fscan(os.Stdin, &confirm)
+				if confirm != "y" && confirm != "Y" {
+					fmt.Fprintln(cmd.OutOrStdout(), "Aborted.")
+					return nil
+				}
+			}
+
 			_, err = client.Group.Delete(cmd.Context(), groupID)
 			if err != nil {
 				return fmt.Errorf("failed to delete group: %w", err)
@@ -78,5 +91,6 @@ func NewDeleteCmd() *cobra.Command {
 	cmd.Flags().String("name", "", "Group name to identify the group")
 	cmd.Flags().String("id", "", "Group ID to identify the group")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
 	return cmd
 }

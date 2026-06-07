@@ -30,6 +30,7 @@ func TestRecordsDelete(t *testing.T) {
 	err := fx.Run(records.NewDeleteCmd(), []string{
 		"--zone-name", "example.com",
 		"--id", "rec-42",
+		"--yes",
 	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -59,6 +60,7 @@ func TestRecordsDeleteJSON(t *testing.T) {
 		"--zone-name", "example.com",
 		"--id", "rec-42",
 		"--output", "json",
+		"--yes",
 	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -93,6 +95,7 @@ func TestRecordsDeleteError(t *testing.T) {
 	err := fx.Run(records.NewDeleteCmd(), []string{
 		"--zone-name", "example.com",
 		"--id", "rec-42",
+		"--yes",
 	})
 	if err == nil {
 		t.Fatal("expected error, got nil")

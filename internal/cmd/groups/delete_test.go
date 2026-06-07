@@ -23,7 +23,7 @@ func TestGroupsDelete(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewDeleteCmd(), []string{"--name", "TestGroup"})
+	err := fx.Run(groups.NewDeleteCmd(), []string{"--name", "TestGroup", "--yes"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -43,7 +43,7 @@ func TestGroupsDeleteJSON(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewDeleteCmd(), []string{"--name", "TestGroup", "-o", "json"})
+	err := fx.Run(groups.NewDeleteCmd(), []string{"--name", "TestGroup", "--yes", "-o", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -71,7 +71,7 @@ func TestGroupsDeleteError(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewDeleteCmd(), []string{"--name", "TestGroup"})
+	err := fx.Run(groups.NewDeleteCmd(), []string{"--name", "TestGroup", "--yes"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

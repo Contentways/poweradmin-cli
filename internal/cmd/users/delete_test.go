@@ -25,7 +25,7 @@ func TestUsersDelete(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewDeleteCmd(), []string{"--name", "max"})
+	err := fx.Run(users.NewDeleteCmd(), []string{"--name", "max", "--yes"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -51,7 +51,7 @@ func TestUsersDeleteJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewDeleteCmd(), []string{"--name", "max", "--output", "json"})
+	err := fx.Run(users.NewDeleteCmd(), []string{"--name", "max", "--yes", "--output", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -83,7 +83,7 @@ func TestUsersDeleteError(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewDeleteCmd(), []string{"--name", "max"})
+	err := fx.Run(users.NewDeleteCmd(), []string{"--name", "max", "--yes"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
