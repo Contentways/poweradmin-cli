@@ -1,5 +1,14 @@
 # Changelog
 
+## [v0.4.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v0.4.0)
+
+### Features
+
+- add version command with build-time version injection
+- add records update command with tests
+- add --type and --name-filter flags to zones list
+- add record update, version command, zone filters, fix tests
+
 ## [v0.3.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v0.3.0)
 
 ### Features
