@@ -1,5 +1,16 @@
 # Changelog
 
+## [v1.1.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.1.0)
+
+### Features
+
+- add delete confirmation prompt with --yes/-y flag
+- add --no-header flag to list commands, --quiet/-q to create/delete
+- add color output for TTY terminals
+- add records get command with client-side ID lookup
+- add sort flags, records get, records/users filter, stderr error output, base package refactor
+- add shell completion via API for zone, user and group names
+
 ## [v0.4.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v0.4.0)
 
 ### Features
