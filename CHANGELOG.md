@@ -1,5 +1,15 @@
 # Changelog
 
+## [v1.2.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.2.0)
+
+### Features
+
+- migrate to dockers_v2, update Dockerfile for multi-arch buildx
+
+### Bug Fixes
+
+- use StringSlice for --nameserver flag to support comma-separated values
+
 ## [v1.1.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.1.0)
 
 ### Features
