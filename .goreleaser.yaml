@@ -42,7 +42,7 @@ archives:
 
 dockers_v2:
   - images:
-      - "contentways/poweradmin-cli"
+      - "contentwaysorg/poweradmin-cli"
     tags:
       - "{{ .Version }}"
       - "{{ if not .IsNightly }}latest{{ end }}"
