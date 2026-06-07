@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.1.3](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.1.3)
+
+### Bug Fixes
+
+- correct Docker Hub org name to contentwaysorg
+
 ## [v1.1.2](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.1.2)
 
 ### Bug Fixes
