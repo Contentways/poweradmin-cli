@@ -15,3 +15,6 @@ test:
 coverage:
 	go test ./... -coverprofile=coverage.txt
 	go tool cover -func=coverage.txt
+
+docs:
+	go run ./scripts/docs.go
