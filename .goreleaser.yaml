@@ -54,5 +54,4 @@ release:
   draft: false
   prerelease: auto
   footer: >-
-    ---
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
