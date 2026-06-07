@@ -40,6 +40,20 @@ archives:
       - README.md
       - docs/reference/*.md
 
+dockers_v2:
+  - images:
+      - "contentways/poweradmin-cli"
+    tags:
+      - "{{ .Version }}"
+      - "{{ if not .IsNightly }}latest{{ end }}"
+    labels:
+      "org.opencontainers.image.title": "poweradmin-cli"
+      "org.opencontainers.image.description": "CLI for managing Poweradmin DNS"
+      "org.opencontainers.image.source": "https://github.com/Contentways/poweradmin-cli"
+      "org.opencontainers.image.version": "{{ .Version }}"
+      "org.opencontainers.image.revision": "{{ .FullCommit }}"
+      "org.opencontainers.image.licenses": "MIT"
+
 checksum:
   name_template: "checksums.txt"
   algorithm: sha256

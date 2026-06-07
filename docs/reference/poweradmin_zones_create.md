@@ -13,11 +13,11 @@ poweradmin zones create <name> [flags]
 ### Options
 
 ```
-  -h, --help                     help for create
-      --nameserver stringArray   Nameserver to add (can be specified multiple times)
-  -o, --output string            Output format. One of: table|json (default "table")
-  -q, --quiet                    Only print the ID of the created zone
-      --type string              Zone type. One of: NATIVE|MASTER|SLAVE (default "NATIVE")
+  -h, --help                 help for create
+      --nameserver strings   Nameserver to add (comma-separated or multiple flags)
+  -o, --output string        Output format. One of: table|json (default "table")
+  -q, --quiet                Only print the ID of the created zone
+      --type string          Zone type. One of: NATIVE|MASTER|SLAVE (default "NATIVE")
 ```
 
 ### Options inherited from parent commands
