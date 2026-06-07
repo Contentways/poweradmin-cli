@@ -58,6 +58,12 @@ func NewCreateCmd() *cobra.Command {
 				return nil
 			}
 
+			quiet, _ := cmd.Flags().GetBool("quiet")
+			if quiet {
+				fmt.Fprintln(cmd.OutOrStdout(), id)
+				return nil
+			}
+
 			fmt.Fprintf(cmd.OutOrStdout(), "created group %s (id %d)\n", name, id)
 			return nil
 		},
@@ -67,5 +73,7 @@ func NewCreateCmd() *cobra.Command {
 	cmd.Flags().String("description", "", "Group description")
 	cmd.Flags().Int("perm-template-id", 0, "Permission template ID")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID (create) or suppress output (delete)")
+
 	return cmd
 }

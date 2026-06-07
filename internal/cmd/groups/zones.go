@@ -69,6 +69,8 @@ func NewZonesCmd() *cobra.Command {
 
 			t := output.New(cmd.OutOrStdout())
 			t.AddHeader("ZONE ID", "ZONE NAME", "TYPE")
+			noHeader, _ := cmd.Flags().GetBool("no-header")
+			t.SetNoHeader(noHeader)
 			for _, z := range zones {
 				t.AddRow(strconv.Itoa(z.ZoneID), z.ZoneName, z.ZoneType)
 			}
@@ -81,5 +83,7 @@ func NewZonesCmd() *cobra.Command {
 	cmd.Flags().String("name", "", "Group name")
 	cmd.Flags().String("id", "", "Group ID")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	cmd.Flags().Bool("no-header", false, "Suppress table header row")
+
 	return cmd
 }

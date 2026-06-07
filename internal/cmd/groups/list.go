@@ -46,6 +46,8 @@ func NewListCmd() *cobra.Command {
 
 			t := output.New(cmd.OutOrStdout())
 			t.AddHeader("ID", "NAME", "DESCRIPTION", "MEMBERS", "ZONES")
+			noHeader, _ := cmd.Flags().GetBool("no-header")
+			t.SetNoHeader(noHeader)
 			for _, g := range groups {
 				t.AddRow(
 					strconv.Itoa(g.ID),
@@ -62,5 +64,7 @@ func NewListCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	cmd.Flags().Bool("no-header", false, "Suppress table header row")
+
 	return cmd
 }

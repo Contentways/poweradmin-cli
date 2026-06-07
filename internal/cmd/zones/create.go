@@ -74,6 +74,11 @@ func NewCreateCmd() *cobra.Command {
 			}
 
 			// Default output — human-readable confirmation.
+			quiet, _ := cmd.Flags().GetBool("quiet")
+			if quiet {
+				fmt.Fprintln(cmd.OutOrStdout(), id)
+				return nil
+			}
 			fmt.Fprintf(cmd.OutOrStdout(), "created zone %s (id %d)\n", args[0], id)
 			return nil
 		},
@@ -82,5 +87,6 @@ func NewCreateCmd() *cobra.Command {
 	cmd.Flags().String("type", "NATIVE", "Zone type. One of: NATIVE|MASTER|SLAVE")
 	cmd.Flags().StringArray("nameserver", []string{}, "Nameserver to add (can be specified multiple times)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID (create) or suppress output (delete)")
 	return cmd
 }

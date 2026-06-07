@@ -11,20 +11,30 @@ import (
 // Columns are separated by tab characters and automatically aligned
 // based on the widest value in each column.
 type Table struct {
-	w *tabwriter.Writer
+	w        *tabwriter.Writer
+	noHeader bool
 }
 
 // New creates a new Table that writes to w.
 // The tabwriter is configured with 3 spaces of padding between columns.
 func New(w io.Writer) *Table {
-	return &Table{
-		w: tabwriter.NewWriter(w, 0, 0, 3, ' ', 0),
-	}
+	return &Table{w: tabwriter.NewWriter(w, 0, 0, 3, ' ', 0)}
+}
+
+// SetNoHeader controls whether the header row is rendered.
+// When set to true, calls to AddHeader are silently ignored.
+// Must be called before AddHeader to take effect.
+func (t *Table) SetNoHeader(v bool) {
+	t.noHeader = v
 }
 
 // AddHeader writes a header row to the table.
 // Column values are separated by tab characters for alignment.
+// If SetNoHeader(true) was called, this method is a no-op.
 func (t *Table) AddHeader(columns ...string) {
+	if t.noHeader {
+		return
+	}
 	for i, col := range columns {
 		if i > 0 {
 			t.w.Write([]byte("\t"))

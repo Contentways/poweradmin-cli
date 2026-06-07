@@ -99,6 +99,11 @@ func NewCreateCmd() *cobra.Command {
 			}
 
 			// Default output — human-readable confirmation.
+			quiet, _ := cmd.Flags().GetBool("quiet")
+			if quiet {
+				fmt.Fprintln(cmd.OutOrStdout(), id)
+				return nil
+			}
 			fmt.Fprintf(cmd.OutOrStdout(), "created user %s (id %d)\n", username, id)
 			return nil
 		},
@@ -110,5 +115,7 @@ func NewCreateCmd() *cobra.Command {
 	cmd.Flags().String("fullname", "", "Full name")
 	cmd.Flags().Bool("active", true, "Whether the user is active (default: true)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID (create) or suppress output (delete)")
+
 	return cmd
 }

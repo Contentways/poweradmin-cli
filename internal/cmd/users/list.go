@@ -51,6 +51,8 @@ func NewListCmd() *cobra.Command {
 			// Table output — render an aligned table with ID, username, email and active columns.
 			t := output.New(cmd.OutOrStdout())
 			t.AddHeader("ID", "USERNAME", "EMAIL", "ACTIVE")
+			noHeader, _ := cmd.Flags().GetBool("no-header")
+			t.SetNoHeader(noHeader)
 			for _, u := range users {
 				active := "no"
 				if u.Active {
@@ -65,5 +67,7 @@ func NewListCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().Bool("no-header", false, "Suppress table header row")
+
 	return cmd
 }

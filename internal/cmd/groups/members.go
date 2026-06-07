@@ -69,6 +69,8 @@ func NewMembersCmd() *cobra.Command {
 
 			t := output.New(cmd.OutOrStdout())
 			t.AddHeader("USER ID", "USERNAME", "FULLNAME")
+			noHeader, _ := cmd.Flags().GetBool("no-header")
+			t.SetNoHeader(noHeader)
 			for _, m := range members {
 				t.AddRow(strconv.Itoa(m.UserID), m.Username)
 			}
@@ -81,5 +83,7 @@ func NewMembersCmd() *cobra.Command {
 	cmd.Flags().String("name", "", "Group name")
 	cmd.Flags().String("id", "", "Group ID")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	cmd.Flags().Bool("no-header", false, "Suppress table header row")
+
 	return cmd
 }

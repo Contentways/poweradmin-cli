@@ -92,6 +92,11 @@ func NewCreateCmd() *cobra.Command {
 			}
 
 			// Default output — human-readable confirmation.
+			quiet, _ := cmd.Flags().GetBool("quiet")
+			if quiet {
+				fmt.Fprintln(cmd.OutOrStdout(), id)
+				return nil
+			}
 			fmt.Fprintf(cmd.OutOrStdout(), "created record %s %s %s (id %s)\n", name, recordType, content, id)
 			return nil
 		},
@@ -105,5 +110,6 @@ func NewCreateCmd() *cobra.Command {
 	cmd.Flags().Int("ttl", 3600, "Time to live in seconds (default: 3600)")
 	cmd.Flags().Int("priority", 0, "Record priority, used for MX records (default: 0)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID (create) or suppress output (delete)")
 	return cmd
 }

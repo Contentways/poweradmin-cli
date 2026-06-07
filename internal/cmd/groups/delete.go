@@ -54,7 +54,7 @@ func NewDeleteCmd() *cobra.Command {
 			// Confirm deletion unless --yes flag is set.
 			yes, _ := cmd.Flags().GetBool("yes")
 			if !yes {
-				fmt.Fprintf(cmd.OutOrStdout(), "Delete record (id %d)? [y/N] ", groupID)
+				fmt.Fprintf(cmd.OutOrStdout(), "Delete group (id %d)? [y/N] ", groupID)
 				var confirm string
 				fmt.Fscan(os.Stdin, &confirm)
 				if confirm != "y" && confirm != "Y" {
@@ -66,6 +66,11 @@ func NewDeleteCmd() *cobra.Command {
 			_, err = client.Group.Delete(cmd.Context(), groupID)
 			if err != nil {
 				return fmt.Errorf("failed to delete group: %w", err)
+			}
+
+			quiet, _ := cmd.Flags().GetBool("quiet")
+			if quiet {
+				return nil
 			}
 
 			outputStr, _ := cmd.Flags().GetString("output")
@@ -92,5 +97,7 @@ func NewDeleteCmd() *cobra.Command {
 	cmd.Flags().String("id", "", "Group ID to identify the group")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
+	cmd.Flags().BoolP("quiet", "q", false, "Suppress output after deletion")
+
 	return cmd
 }

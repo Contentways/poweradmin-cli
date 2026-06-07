@@ -75,6 +75,11 @@ func NewDeleteCmd() *cobra.Command {
 				return fmt.Errorf("failed to delete user: %w", err)
 			}
 
+			quiet, _ := cmd.Flags().GetBool("quiet")
+			if quiet {
+				return nil
+			}
+
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
@@ -101,5 +106,7 @@ func NewDeleteCmd() *cobra.Command {
 	cmd.Flags().String("id", "", "User ID to identify the user")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
 	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
+	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID (create) or suppress output (delete)")
+
 	return cmd
 }

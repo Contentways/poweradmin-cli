@@ -69,6 +69,8 @@ func NewListCmd() *cobra.Command {
 
 			// Table output — render an aligned table with ID, name and type columns.
 			t := output.New(cmd.OutOrStdout())
+			noHeader, _ := cmd.Flags().GetBool("no-header")
+			t.SetNoHeader(noHeader)
 			t.AddHeader("ID", "NAME", "TYPE")
 			for _, z := range zones {
 				t.AddRow(strconv.Itoa(z.ID), z.Name, string(z.Type))
@@ -80,7 +82,9 @@ func NewListCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().Bool("no-header", false, "Suppress table header row")
 	cmd.Flags().String("type", "", "Filter by zone type. One of: NATIVE|MASTER|SLAVE")
 	cmd.Flags().String("name-filter", "", "Filter by zone name (substring match)")
+
 	return cmd
 }

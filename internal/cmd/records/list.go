@@ -75,6 +75,8 @@ func NewListCmd() *cobra.Command {
 			// to keep the output readable. Use --output full to see the complete content.
 			t := output.New(cmd.OutOrStdout())
 			t.AddHeader("NAME", "TYPE", "CONTENT", "TTL")
+			noHeader, _ := cmd.Flags().GetBool("no-header")
+			t.SetNoHeader(noHeader)
 			for _, r := range records {
 				content := r.Content
 				if outputFmt == output.FormatTable {
@@ -91,5 +93,7 @@ func NewListCmd() *cobra.Command {
 	cmd.Flags().String("zone-name", "", "Zone name (e.g. example.com)")
 	cmd.Flags().String("zone-id", "", "Zone ID")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().Bool("no-header", false, "Suppress table header row")
+
 	return cmd
 }

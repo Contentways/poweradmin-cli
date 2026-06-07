@@ -78,6 +78,11 @@ func NewDeleteCmd() *cobra.Command {
 				return fmt.Errorf("failed to delete record: %w", err)
 			}
 
+			quiet, _ := cmd.Flags().GetBool("quiet")
+			if quiet {
+				return nil
+			}
+
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
@@ -105,5 +110,7 @@ func NewDeleteCmd() *cobra.Command {
 	cmd.Flags().String("id", "", "Record ID (opaque string returned by the API)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
 	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
+	cmd.Flags().BoolP("quiet", "q", false, "Suppress output after deletion")
+
 	return cmd
 }
