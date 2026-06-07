@@ -26,6 +26,16 @@ func NewRootCommand(s *state.State) *cobra.Command {
 		Use:   "poweradmin",
 		Short: "CLI for managing Poweradmin DNS",
 		Long:  `poweradmin is a command-line tool for managing DNS zones and records via the Poweradmin REST API.`,
+
+		// SilenceUsage suppresses the usage message when a command returns an error.
+		// Without this, Cobra prints the full usage text on every error which is
+		// noisy and unhelpful for end users. Errors are still printed to stderr.
+		SilenceUsage: true,
+
+		// SilenceErrors suppresses Cobra's own error printing so we can control
+		// the format ourselves in Execute(). Set to false to let Cobra print errors.
+		SilenceErrors: false,
+
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			// CLI flags take the highest precedence — override any values
 			// that were loaded from the config file or environment variables.
@@ -44,6 +54,11 @@ func NewRootCommand(s *state.State) *cobra.Command {
 		},
 	}
 
+	// Direct all error output to stderr so that stdout remains clean
+	// for scripting and piping. This ensures that error messages do not
+	// pollute JSON or table output captured by the caller.
+	root.SetErr(os.Stderr)
+
 	// Persistent flags are available to the root command and all subcommands.
 	// They override values from the config file and environment variables.
 	root.PersistentFlags().StringP("url", "u", "", "Poweradmin URL (e.g. https://dns.example.com)")
@@ -60,6 +75,7 @@ func NewRootCommand(s *state.State) *cobra.Command {
 }
 
 // Execute runs the root command and exits with a non-zero status code on error.
+// Errors are written to stderr; the exit code signals failure to the caller.
 // This is the single entry point called from main.
 func Execute(root *cobra.Command) {
 	if err := root.Execute(); err != nil {

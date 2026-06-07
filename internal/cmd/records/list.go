@@ -4,7 +4,9 @@ package records
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
@@ -44,6 +46,31 @@ func NewListCmd() *cobra.Command {
 				return fmt.Errorf("failed to list records: %w", err)
 			}
 
+			sortBy, _ := cmd.Flags().GetString("sort")
+			if sortBy != "" {
+				sort.Slice(records, func(i, j int) bool {
+					switch sortBy {
+					case "type":
+						return records[i].Type < records[j].Type
+					case "ttl":
+						return records[i].TTL < records[j].TTL
+					default: // name
+						return records[i].Name < records[j].Name
+					}
+				})
+			}
+
+			typeFilter, _ := cmd.Flags().GetString("type")
+			if typeFilter != "" {
+				filtered := records[:0]
+				for _, r := range records {
+					if strings.EqualFold(r.Type, typeFilter) {
+						filtered = append(filtered, r)
+					}
+				}
+				records = filtered
+			}
+
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
@@ -72,7 +99,9 @@ func NewListCmd() *cobra.Command {
 
 	cmd.Flags().String("zone-name", "", "Zone name (e.g. example.com)")
 	cmd.Flags().String("zone-id", "", "Zone ID")
+	cmd.Flags().String("type", "", "Filter by record type (e.g. A, AAAA, MX, TXT)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|full|json")
 	cmd.Flags().Bool("no-header", false, "Suppress table header row")
+	cmd.Flags().String("sort", "", "Sort by field. One of: name|type|ttl")
 	return cmd
 }

@@ -4,6 +4,7 @@ package zones
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -31,6 +32,20 @@ func NewListCmd() *cobra.Command {
 			zones, err := client.Zone.All(cmd.Context())
 			if err != nil {
 				return fmt.Errorf("failed to list zones: %w", err)
+			}
+
+			sortBy, _ := cmd.Flags().GetString("sort")
+			if sortBy != "" {
+				sort.Slice(zones, func(i, j int) bool {
+					switch sortBy {
+					case "name":
+						return zones[i].Name < zones[j].Name
+					case "type":
+						return string(zones[i].Type) < string(zones[j].Type)
+					default: // id
+						return zones[i].ID < zones[j].ID
+					}
+				})
 			}
 
 			typeFilter, _ := cmd.Flags().GetString("type")
@@ -75,5 +90,6 @@ func NewListCmd() *cobra.Command {
 	cmd.Flags().Bool("no-header", false, "Suppress table header row")
 	cmd.Flags().String("type", "", "Filter by zone type. One of: NATIVE|MASTER|SLAVE")
 	cmd.Flags().String("name-filter", "", "Filter by zone name (substring match)")
+	cmd.Flags().String("sort", "", "Sort by field. One of: id|name|type")
 	return cmd
 }
