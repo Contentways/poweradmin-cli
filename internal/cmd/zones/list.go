@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/schema"
@@ -35,6 +36,24 @@ func NewListCmd() *cobra.Command {
 				return fmt.Errorf("failed to list zones: %w", err)
 			}
 
+			// Apply optional filters client-side.
+			typeFilter, _ := cmd.Flags().GetString("type")
+			nameFilter, _ := cmd.Flags().GetString("name-filter")
+
+			if typeFilter != "" || nameFilter != "" {
+				filtered := zones[:0]
+				for _, z := range zones {
+					if typeFilter != "" && !strings.EqualFold(string(z.Type), typeFilter) {
+						continue
+					}
+					if nameFilter != "" && !strings.Contains(z.Name, nameFilter) {
+						continue
+					}
+					filtered = append(filtered, z)
+				}
+				zones = filtered
+			}
+
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
@@ -61,5 +80,7 @@ func NewListCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().String("type", "", "Filter by zone type. One of: NATIVE|MASTER|SLAVE")
+	cmd.Flags().String("name-filter", "", "Filter by zone name (substring match)")
 	return cmd
 }
