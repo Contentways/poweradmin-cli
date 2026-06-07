@@ -51,12 +51,10 @@ func NewListCmd() *cobra.Command {
 			// Table output — render an aligned table with ID, username, email and active columns.
 			t := output.New(cmd.OutOrStdout())
 			t.AddHeader("ID", "USERNAME", "EMAIL", "ACTIVE")
-			noHeader, _ := cmd.Flags().GetBool("no-header")
-			t.SetNoHeader(noHeader)
 			for _, u := range users {
-				active := "no"
+				active := output.Red("no")
 				if u.Active {
-					active = "yes"
+					active = output.Green("yes")
 				}
 				t.AddRow(strconv.Itoa(u.ID), u.Username, u.Email, active)
 			}

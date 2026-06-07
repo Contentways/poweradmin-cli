@@ -73,7 +73,11 @@ func NewListCmd() *cobra.Command {
 			t.SetNoHeader(noHeader)
 			t.AddHeader("ID", "NAME", "TYPE")
 			for _, z := range zones {
-				t.AddRow(strconv.Itoa(z.ID), z.Name, string(z.Type))
+				t.AddRow(
+					strconv.Itoa(z.ID),
+					z.Name,
+					output.Cyan(string(z.Type)),
+				)
 			}
 			t.Flush()
 

@@ -49,12 +49,22 @@ func NewListCmd() *cobra.Command {
 			noHeader, _ := cmd.Flags().GetBool("no-header")
 			t.SetNoHeader(noHeader)
 			for _, g := range groups {
+				memberCount := strconv.Itoa(g.MemberCount)
+				if g.MemberCount > 0 {
+					memberCount = output.Green(memberCount)
+				}
+
+				zoneCount := strconv.Itoa(g.ZoneCount)
+				if g.ZoneCount > 0 {
+					zoneCount = output.Green(zoneCount)
+				}
+
 				t.AddRow(
 					strconv.Itoa(g.ID),
 					g.Name,
 					g.Description,
-					strconv.Itoa(g.MemberCount),
-					strconv.Itoa(g.ZoneCount),
+					memberCount,
+					zoneCount,
 				)
 			}
 			t.Flush()

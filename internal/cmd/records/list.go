@@ -82,7 +82,7 @@ func NewListCmd() *cobra.Command {
 				if outputFmt == output.FormatTable {
 					content = output.Truncate(content, 50)
 				}
-				t.AddRow(r.Name, r.Type, content, strconv.Itoa(r.TTL))
+				t.AddRow(r.Name, output.Cyan(r.Type), content, strconv.Itoa(r.TTL))
 			}
 			t.Flush()
 

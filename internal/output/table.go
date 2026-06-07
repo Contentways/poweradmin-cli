@@ -39,7 +39,7 @@ func (t *Table) AddHeader(columns ...string) {
 		if i > 0 {
 			t.w.Write([]byte("\t"))
 		}
-		t.w.Write([]byte(col))
+		t.w.Write([]byte(Bold(col)))
 	}
 	t.w.Write([]byte("\n"))
 }
