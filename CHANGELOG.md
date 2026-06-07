@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.1.2](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.1.2)
+
+### Bug Fixes
+
+- simplify Dockerfile - use pre-built binary from GoReleaser context
+
 ## [v1.2.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.2.0)
 
 ### Features
