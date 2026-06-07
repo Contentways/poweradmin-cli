@@ -79,3 +79,21 @@ func TestUserListFromSDK(t *testing.T) {
 		t.Errorf("UserListFromSDK = %+v", out)
 	}
 }
+
+func TestZoneWithNameservers(t *testing.T) {
+	z := &poweradmin.Zone{
+		ID:   1,
+		Name: "example.com",
+		Type: "NATIVE",
+	}
+	out := schema.ZoneWithNameservers{
+		Zone:        schema.ZoneFromSDK(z),
+		Nameservers: []string{"ns1.example.com", "ns2.example.com"},
+	}
+	if out.Name != "example.com" {
+		t.Errorf("ZoneWithNameservers.Name = %q", out.Name)
+	}
+	if len(out.Nameservers) != 2 {
+		t.Errorf("ZoneWithNameservers.Nameservers = %v", out.Nameservers)
+	}
+}
