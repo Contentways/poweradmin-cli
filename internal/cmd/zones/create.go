@@ -37,7 +37,7 @@ func NewCreateCmd() *cobra.Command {
 				return fmt.Errorf("failed to create zone: %w", err)
 			}
 
-			nameservers, _ := cmd.Flags().GetStringArray("nameserver")
+			nameservers, _ := cmd.Flags().GetStringSlice("nameserver")
 			for _, ns := range nameservers {
 				_, _, err := client.Record.Create(cmd.Context(), id, poweradmin.RecordCreateOpts{
 					Name:    args[0],
@@ -73,7 +73,7 @@ func NewCreateCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String("type", "NATIVE", "Zone type. One of: NATIVE|MASTER|SLAVE")
-	cmd.Flags().StringArray("nameserver", []string{}, "Nameserver to add (can be specified multiple times)")
+	cmd.Flags().StringSlice("nameserver", []string{}, "Nameserver to add (comma-separated or multiple flags)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID of the created zone")
 	return cmd
