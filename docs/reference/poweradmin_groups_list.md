@@ -14,6 +14,7 @@ poweradmin groups list [flags]
 
 ```
   -h, --help            help for list
+      --no-header       Suppress table header row
   -o, --output string   Output format. One of: table|json (default "table")
 ```
 

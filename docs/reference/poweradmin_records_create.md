@@ -16,8 +16,9 @@ poweradmin records create [flags]
       --content string     Record content (e.g. 1.2.3.4 for A records)
   -h, --help               help for create
       --name string        Record name (e.g. www.example.com)
-  -o, --output string      Output format. One of: table|json|full (default "table")
+  -o, --output string      Output format. One of: table|json (default "table")
       --priority int       Record priority, used for MX records (default: 0)
+  -q, --quiet              Only print the ID of the created record
       --ttl int            Time to live in seconds (default: 3600) (default 3600)
       --type string        Record type. One of: A|AAAA|CNAME|MX|TXT|NS|SRV|...
       --zone-id string     Zone ID

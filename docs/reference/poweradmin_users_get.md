@@ -16,7 +16,7 @@ poweradmin users get [flags]
   -h, --help            help for get
       --id string       User ID
       --name string     Username
-  -o, --output string   Output format. One of: table|json|full (default "table")
+  -o, --output string   Output format. One of: table|json (default "table")
 ```
 
 ### Options inherited from parent commands

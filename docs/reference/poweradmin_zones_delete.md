@@ -16,7 +16,9 @@ poweradmin zones delete [flags]
   -h, --help            help for delete
       --id string       Zone ID
       --name string     Zone name (e.g. example.com)
-  -o, --output string   Output format. One of: table|json|full (default "table")
+  -o, --output string   Output format. One of: table|json (default "table")
+  -q, --quiet           Suppress output after deletion
+  -y, --yes             Skip confirmation prompt
 ```
 
 ### Options inherited from parent commands

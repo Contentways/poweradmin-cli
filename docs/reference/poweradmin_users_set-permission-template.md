@@ -16,7 +16,7 @@ poweradmin users set-permission-template [flags]
   -h, --help                 help for set-permission-template
       --id string            User ID to identify the user
       --name string          Username to identify the user
-  -o, --output string        Output format. One of: table|json|full (default "table")
+  -o, --output string        Output format. One of: table|json (default "table")
       --template-id string   Permission template ID to assign (required)
 ```
 

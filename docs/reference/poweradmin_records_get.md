@@ -1,23 +1,21 @@
-## poweradmin records list
+## poweradmin records get
 
-List all records in a zone
+Get a DNS record by ID
 
 ### Synopsis
 
-List all DNS records in a zone by name or ID.
+Get a single DNS record by its ID from a zone.
 
 ```
-poweradmin records list [flags]
+poweradmin records get [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help               help for list
-      --no-header          Suppress table header row
-  -o, --output string      Output format. One of: table|full|json (default "table")
-      --sort string        Sort by field. One of: name|type|ttl
-      --type string        Filter by record type (e.g. A, AAAA, MX, TXT)
+  -h, --help               help for get
+      --id string          Record ID (required)
+  -o, --output string      Output format. One of: table|json (default "table")
       --zone-id string     Zone ID
       --zone-name string   Zone name (e.g. example.com)
 ```

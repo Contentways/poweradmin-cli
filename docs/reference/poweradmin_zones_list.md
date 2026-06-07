@@ -15,7 +15,9 @@ poweradmin zones list [flags]
 ```
   -h, --help                 help for list
       --name-filter string   Filter by zone name (substring match)
+      --no-header            Suppress table header row
   -o, --output string        Output format. One of: table|json|full (default "table")
+      --sort string          Sort by field. One of: id|name|type
       --type string          Filter by zone type. One of: NATIVE|MASTER|SLAVE
 ```
 

@@ -21,6 +21,12 @@ curl -L https://github.com/Contentways/poweradmin-cli/releases/latest/download/p
 sudo mv poweradmin /usr/local/bin/
 ```
 
+### Via go install
+
+```bash
+go install github.com/Contentways/poweradmin-cli@latest
+```
+
 ### From source
 
 ```bash
@@ -73,6 +79,9 @@ poweradmin zones list -u https://dns.example.com -k pwa_...
 
 ## Shell Completion
 
+Shell completion supports Tab completion for command names, flags and values
+including zone names, usernames and group names fetched live from the API.
+
 ### zsh (Oh My Zsh)
 
 ```bash
@@ -89,6 +98,17 @@ source ~/.bash_completion.d/poweradmin
 
 ## Usage
 
+### Global Flags
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--url` | `-u` | Poweradmin URL |
+| `--api-key` | `-k` | Poweradmin API key |
+| `--output` | `-o` | Output format: `table`, `full`, `json` |
+| `--no-header` | | Suppress table header row |
+| `--quiet` | `-q` | Only print ID (create) or suppress output (delete) |
+| `--yes` | `-y` | Skip delete confirmation prompt |
+
 ### Zones
 
 ```bash
@@ -96,26 +116,27 @@ source ~/.bash_completion.d/poweradmin
 poweradmin zones list
 poweradmin zones list -o json
 
-# Filter zones
+# Filter and sort zones
 poweradmin zones list --type NATIVE
 poweradmin zones list --name-filter contentways
-poweradmin zones list --type NATIVE --name-filter contentways
+poweradmin zones list --sort name
 
 # Get a zone by name or ID
 poweradmin zones get --name example.com
-poweradmin zones get --id 42
-poweradmin zones get --name example.com -o json
+poweradmin zones get --id 42 -o json
 
-# Create a zone
+# Create a zone with nameservers
 poweradmin zones create example.com
-poweradmin zones create example.com --type NATIVE
 poweradmin zones create example.com \
   --nameserver ns1.example.com \
   --nameserver ns2.example.com
 
+# Create and capture the ID
+ZONE_ID=$(poweradmin zones create example.com -q)
+
 # Delete a zone
 poweradmin zones delete --name example.com
-poweradmin zones delete --id 42
+poweradmin zones delete --name example.com --yes
 ```
 
 ### Records
@@ -123,8 +144,12 @@ poweradmin zones delete --id 42
 ```bash
 # List all records in a zone
 poweradmin records list --zone-name example.com
-poweradmin records list --zone-name example.com -o full
+poweradmin records list --zone-name example.com --type A
+poweradmin records list --zone-name example.com --sort type
 poweradmin records list --zone-name example.com -o json
+
+# Get a record by ID
+poweradmin records get --zone-name example.com --id <record-id>
 
 # Create a record
 poweradmin records create \
@@ -134,16 +159,23 @@ poweradmin records create \
   --content 1.2.3.4 \
   --ttl 3600
 
+# Create and capture the ID
+RECORD_ID=$(poweradmin records create \
+  --zone-name example.com \
+  --name www.example.com \
+  --type A \
+  --content 1.2.3.4 -q)
+
 # Update a record
 poweradmin records update \
   --zone-name example.com \
-  --id eyJ6IjoiZXhhbXBsZS5jb20i... \
+  --id <record-id> \
   --content 5.6.7.8
 
 # Delete a record
 poweradmin records delete \
   --zone-name example.com \
-  --id eyJ6IjoiZXhhbXBsZS5jb20i...
+  --id <record-id> --yes
 ```
 
 ### Users
@@ -151,7 +183,9 @@ poweradmin records delete \
 ```bash
 # List all users
 poweradmin users list
-poweradmin users list -o json
+poweradmin users list --active
+poweradmin users list --active=false
+poweradmin users list --sort username
 
 # Get a user by name or ID
 poweradmin users get --name patrick
@@ -163,7 +197,7 @@ poweradmin users create \
   --email patrick@example.com \
   --fullname "Patrick Omland"
 
-# Create a user with password via flag (not recommended — visible in shell history)
+# Create a user with password via flag (not recommended)
 poweradmin users create \
   --username patrick \
   --password secret123 \
@@ -174,8 +208,7 @@ poweradmin users update --name patrick --email new@example.com
 poweradmin users update --id 1 --active=false
 
 # Delete a user
-poweradmin users delete --name patrick
-poweradmin users delete --id 1
+poweradmin users delete --name patrick --yes
 
 # Assign a permission template
 poweradmin users set-permission-template --name patrick --template-id 2
@@ -194,12 +227,13 @@ poweradmin groups get --id 1
 
 # Create a group
 poweradmin groups create --name "Zone Editors" --description "Can edit zone records"
+GROUP_ID=$(poweradmin groups create --name "Zone Editors" -q)
 
 # Update a group
 poweradmin groups update --name "Zone Editors" --new-name "DNS Editors"
 
 # Delete a group
-poweradmin groups delete --name "DNS Editors"
+poweradmin groups delete --name "DNS Editors" --yes
 
 # Manage members
 poweradmin groups members --name Administrators
@@ -225,6 +259,29 @@ poweradmin version
 | `-o table` | Human-readable aligned table, long content truncated (default) |
 | `-o full` | Human-readable aligned table, full content |
 | `-o json` | JSON output, suitable for scripting and piping into `jq` |
+
+Color output is automatically enabled when stdout is a terminal and suppressed
+when piping or redirecting output.
+
+## Scripting
+
+```bash
+# Get all zone IDs
+poweradmin zones list -o json | jq '.zones[].id'
+
+# Create a zone and immediately add a record
+ZONE_ID=$(poweradmin zones create example.com -q)
+poweradmin records create \
+  --zone-id $ZONE_ID \
+  --name www.example.com \
+  --type A \
+  --content 1.2.3.4
+
+# Delete all records of a specific type
+poweradmin records list --zone-name example.com --type TXT -o json \
+  | jq -r '.records[].id' \
+  | xargs -I{} poweradmin records delete --zone-name example.com --id {} --yes
+```
 
 ## Documentation
 

@@ -18,6 +18,7 @@ poweradmin groups create [flags]
       --name string            Group name (required)
   -o, --output string          Output format. One of: table|json (default "table")
       --perm-template-id int   Permission template ID
+  -q, --quiet                  Only print the ID of the created group
 ```
 
 ### Options inherited from parent commands

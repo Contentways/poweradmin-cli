@@ -19,7 +19,7 @@ poweradmin users update [flags]
   -h, --help              help for update
       --id string         User ID to identify the user
       --name string       Username to identify the user
-  -o, --output string     Output format. One of: table|json|full (default "table")
+  -o, --output string     Output format. One of: table|json (default "table")
       --password string   New password
 ```
 

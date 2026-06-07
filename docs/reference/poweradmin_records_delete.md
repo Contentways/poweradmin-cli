@@ -15,7 +15,9 @@ poweradmin records delete [flags]
 ```
   -h, --help               help for delete
       --id string          Record ID (opaque string returned by the API)
-  -o, --output string      Output format. One of: table|json|full (default "table")
+  -o, --output string      Output format. One of: table|json (default "table")
+  -q, --quiet              Suppress output after deletion
+  -y, --yes                Skip confirmation prompt
       --zone-id string     Zone ID
       --zone-name string   Zone name (e.g. example.com)
 ```

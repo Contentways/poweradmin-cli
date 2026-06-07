@@ -16,6 +16,7 @@ poweradmin groups zones [flags]
   -h, --help            help for zones
       --id string       Group ID
       --name string     Group name
+      --no-header       Suppress table header row
   -o, --output string   Output format. One of: table|json (default "table")
 ```
 

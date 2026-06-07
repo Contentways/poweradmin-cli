@@ -24,6 +24,7 @@ Manage DNS records in Poweradmin — list, create and delete records.
 * [poweradmin](poweradmin.md)	 - CLI for managing Poweradmin DNS
 * [poweradmin records create](poweradmin_records_create.md)	 - Create a DNS record
 * [poweradmin records delete](poweradmin_records_delete.md)	 - Delete a DNS record
+* [poweradmin records get](poweradmin_records_get.md)	 - Get a DNS record by ID
 * [poweradmin records list](poweradmin_records_list.md)	 - List all records in a zone
 * [poweradmin records update](poweradmin_records_update.md)	 - Update a DNS record
 

@@ -13,8 +13,11 @@ poweradmin users list [flags]
 ### Options
 
 ```
+      --active          Filter by active status (--active or --active=false)
   -h, --help            help for list
-  -o, --output string   Output format. One of: table|json|full (default "table")
+      --no-header       Suppress table header row
+  -o, --output string   Output format. One of: table|json (default "table")
+      --sort string     Sort by field. One of: id|username|email
 ```
 
 ### Options inherited from parent commands

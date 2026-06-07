@@ -17,6 +17,8 @@ poweradmin groups delete [flags]
       --id string       Group ID to identify the group
       --name string     Group name to identify the group
   -o, --output string   Output format. One of: table|json (default "table")
+  -q, --quiet           Suppress output after deletion
+  -y, --yes             Skip confirmation prompt
 ```
 
 ### Options inherited from parent commands

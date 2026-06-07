@@ -15,7 +15,8 @@ poweradmin zones create <name> [flags]
 ```
   -h, --help                     help for create
       --nameserver stringArray   Nameserver to add (can be specified multiple times)
-  -o, --output string            Output format. One of: table|json|full (default "table")
+  -o, --output string            Output format. One of: table|json (default "table")
+  -q, --quiet                    Only print the ID of the created zone
       --type string              Zone type. One of: NATIVE|MASTER|SLAVE (default "NATIVE")
 ```
 

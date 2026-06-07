@@ -16,7 +16,7 @@ poweradmin zones get [flags]
   -h, --help            help for get
       --id string       Zone ID
       --name string     Zone name (e.g. example.com)
-  -o, --output string   Output format. One of: table|json|full (default "table")
+  -o, --output string   Output format. One of: table|json (default "table")
 ```
 
 ### Options inherited from parent commands
