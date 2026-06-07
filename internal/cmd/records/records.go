@@ -22,6 +22,7 @@ func NewRecordsCommand() *cobra.Command {
 	cmd.AddCommand(NewListCmd())
 	cmd.AddCommand(NewCreateCmd())
 	cmd.AddCommand(NewDeleteCmd())
+	cmd.AddCommand(NewUpdateCmd())
 
 	return cmd
 }
