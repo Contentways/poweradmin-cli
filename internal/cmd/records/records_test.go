@@ -13,7 +13,7 @@ func TestNewRecordsCommand(t *testing.T) {
 		t.Fatalf("Use = %q", cmd.Use)
 	}
 
-	if len(cmd.Commands()) != 3 {
-		t.Fatalf("got %d subcommands, want 3", len(cmd.Commands()))
+	if len(cmd.Commands()) != 4 {
+		t.Fatalf("got %d subcommands, want 4", len(cmd.Commands()))
 	}
 }

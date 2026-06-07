@@ -76,3 +76,55 @@ func TestZonesListError(t *testing.T) {
 		t.Fatal("expected error, got nil")
 	}
 }
+
+func TestZonesListFilterByType(t *testing.T) {
+	mockZone := &testutil.MockZoneClient{
+		AllFn: func(ctx context.Context) ([]*poweradmin.Zone, error) {
+			return []*poweradmin.Zone{
+				{ID: 1, Name: "example.com", Type: "NATIVE"},
+				{ID: 2, Name: "example.org", Type: "MASTER"},
+			}, nil
+		},
+	}
+
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, nil, nil, nil)
+
+	err := fx.Run(zones.NewListCmd(), []string{"--type", "NATIVE"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	out := fx.Stdout.String()
+	if !strings.Contains(out, "example.com") {
+		t.Errorf("expected output to contain example.com, got:\n%s", out)
+	}
+	if strings.Contains(out, "example.org") {
+		t.Errorf("expected output to NOT contain example.org, got:\n%s", out)
+	}
+}
+
+func TestZonesListFilterByName(t *testing.T) {
+	mockZone := &testutil.MockZoneClient{
+		AllFn: func(ctx context.Context) ([]*poweradmin.Zone, error) {
+			return []*poweradmin.Zone{
+				{ID: 1, Name: "example.com", Type: "NATIVE"},
+				{ID: 2, Name: "contentways.org", Type: "NATIVE"},
+			}, nil
+		},
+	}
+
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, nil, nil, nil)
+
+	err := fx.Run(zones.NewListCmd(), []string{"--name-filter", "contentways"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	out := fx.Stdout.String()
+	if !strings.Contains(out, "contentways.org") {
+		t.Errorf("expected output to contain contentways.org, got:\n%s", out)
+	}
+	if strings.Contains(out, "example.com") {
+		t.Errorf("expected output to NOT contain example.com, got:\n%s", out)
+	}
+}
