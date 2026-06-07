@@ -3,10 +3,10 @@
 package users
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
@@ -14,9 +14,6 @@ import (
 )
 
 // NewListCmd returns a new "users list" command instance.
-// A new instance is returned on each call to prevent flag state from leaking
-// between successive command executions.
-// Output can be formatted as a table (default) or JSON.
 func NewListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
@@ -38,34 +35,32 @@ func NewListCmd() *cobra.Command {
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
-			// JSON output — print the raw user list and return early.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(schema.UserListFromSDK(users), "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				return base.PrintJSON(cmd, schema.UserListFromSDK(users))
 			}
 
-			// Table output — render an aligned table with ID, username, email and active columns.
-			t := output.New(cmd.OutOrStdout())
+			t := base.NewTable(cmd)
 			t.AddHeader("ID", "USERNAME", "EMAIL", "ACTIVE")
 			for _, u := range users {
-				active := output.Red("no")
+				active := "no"
+				activeColor := output.RedCode()
 				if u.Active {
-					active = output.Green("yes")
+					active = "yes"
+					activeColor = output.GreenCode()
 				}
-				t.AddRow(strconv.Itoa(u.ID), u.Username, u.Email, active)
+				t.AddColoredRow(
+					output.PlainCell(strconv.Itoa(u.ID)),
+					output.PlainCell(u.Username),
+					output.PlainCell(u.Email),
+					output.Cell(active, activeColor),
+				)
 			}
 			t.Flush()
-
 			return nil
 		},
 	}
 
-	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().Bool("no-header", false, "Suppress table header row")
-
 	return cmd
 }

@@ -3,21 +3,16 @@
 package users
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewSetPermissionTemplateCmd returns a new "users set-permission-template" command instance.
-// A new instance is returned on each call to prevent flag state from leaking
-// between successive command executions.
-// The user can be identified by username (--name) or numeric ID (--id).
-// The permission template is identified by its numeric ID (--template-id).
-// Output can be a human-readable confirmation (default) or JSON.
 func NewSetPermissionTemplateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set-permission-template",
@@ -47,25 +42,12 @@ func NewSetPermissionTemplateCmd() *cobra.Command {
 				return fmt.Errorf("failed to create client: %w", err)
 			}
 
-			// Resolve user ID — either parse the numeric flag directly,
-			// or look up the user by username to obtain the ID.
-			var userID int
-			var username string
-			if idStr != "" {
-				userID, err = strconv.Atoi(idStr)
-				if err != nil {
-					return fmt.Errorf("invalid id: %w", err)
-				}
-			} else {
-				user, _, err := client.User.GetByName(cmd.Context(), name)
-				if err != nil {
-					return fmt.Errorf("failed to resolve user: %w", err)
-				}
-				userID = user.ID
-				username = user.Username
+			user, err := base.ResolveUser(cmd, client)
+			if err != nil {
+				return err
 			}
 
-			_, err = client.User.SetPermissionTemplate(cmd.Context(), userID, templateID)
+			_, err = client.User.SetPermissionTemplate(cmd.Context(), user.ID, templateID)
 			if err != nil {
 				return fmt.Errorf("failed to set permission template: %w", err)
 			}
@@ -73,22 +55,15 @@ func NewSetPermissionTemplateCmd() *cobra.Command {
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
-			// JSON output — return the user ID and assigned template ID.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(map[string]any{
-					"user_id":     userID,
-					"username":    username,
+				return base.PrintJSON(cmd, map[string]any{
+					"user_id":     user.ID,
+					"username":    user.Username,
 					"template_id": templateID,
-				}, "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				})
 			}
 
-			// Default output — human-readable confirmation.
-			fmt.Fprintf(cmd.OutOrStdout(), "assigned permission template %d to user %s (id %d)\n", templateID, username, userID)
+			fmt.Fprintf(cmd.OutOrStdout(), "assigned permission template %d to user %s (id %d)\n", templateID, user.Username, user.ID)
 			return nil
 		},
 	}
@@ -96,6 +71,6 @@ func NewSetPermissionTemplateCmd() *cobra.Command {
 	cmd.Flags().String("name", "", "Username to identify the user")
 	cmd.Flags().String("id", "", "User ID to identify the user")
 	cmd.Flags().String("template-id", "", "Permission template ID to assign (required)")
-	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	return cmd
 }

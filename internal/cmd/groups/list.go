@@ -3,10 +3,10 @@
 package groups
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
@@ -36,45 +36,34 @@ func NewListCmd() *cobra.Command {
 			outputFmt := output.ParseFormat(outputStr)
 
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(schema.GroupListFromSDK(groups), "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				return base.PrintJSON(cmd, schema.GroupListFromSDK(groups))
 			}
 
-			t := output.New(cmd.OutOrStdout())
+			t := base.NewTable(cmd)
 			t.AddHeader("ID", "NAME", "DESCRIPTION", "MEMBERS", "ZONES")
-			noHeader, _ := cmd.Flags().GetBool("no-header")
-			t.SetNoHeader(noHeader)
 			for _, g := range groups {
-				memberCount := strconv.Itoa(g.MemberCount)
+				memberColor := ""
 				if g.MemberCount > 0 {
-					memberCount = output.Green(memberCount)
+					memberColor = output.GreenCode()
 				}
-
-				zoneCount := strconv.Itoa(g.ZoneCount)
+				zoneColor := ""
 				if g.ZoneCount > 0 {
-					zoneCount = output.Green(zoneCount)
+					zoneColor = output.GreenCode()
 				}
-
-				t.AddRow(
-					strconv.Itoa(g.ID),
-					g.Name,
-					g.Description,
-					memberCount,
-					zoneCount,
+				t.AddColoredRow(
+					output.PlainCell(strconv.Itoa(g.ID)),
+					output.PlainCell(g.Name),
+					output.PlainCell(g.Description),
+					output.Cell(strconv.Itoa(g.MemberCount), memberColor),
+					output.Cell(strconv.Itoa(g.ZoneCount), zoneColor),
 				)
 			}
 			t.Flush()
-
 			return nil
 		},
 	}
 
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().Bool("no-header", false, "Suppress table header row")
-
 	return cmd
 }

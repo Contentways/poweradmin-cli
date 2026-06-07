@@ -3,11 +3,10 @@
 package groups
 
 import (
-	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
@@ -25,7 +24,6 @@ func NewUpdateCmd() *cobra.Command {
 
 			name, _ := cmd.Flags().GetString("name")
 			idStr, _ := cmd.Flags().GetString("id")
-
 			if name == "" && idStr == "" {
 				return fmt.Errorf("either --name or --id is required")
 			}
@@ -35,22 +33,11 @@ func NewUpdateCmd() *cobra.Command {
 				return fmt.Errorf("failed to create client: %w", err)
 			}
 
-			// Resolve group ID.
-			var groupID int
-			if idStr != "" {
-				groupID, err = strconv.Atoi(idStr)
-				if err != nil {
-					return fmt.Errorf("invalid id: %w", err)
-				}
-			} else {
-				group, _, err := client.Group.GetByName(cmd.Context(), name)
-				if err != nil {
-					return fmt.Errorf("failed to resolve group: %w", err)
-				}
-				groupID = group.ID
+			group, err := base.ResolveGroup(cmd, client)
+			if err != nil {
+				return err
 			}
 
-			// Build update opts — only include fields that were explicitly set.
 			opts := poweradmin.GroupUpdateOpts{}
 			if cmd.Flags().Changed("new-name") {
 				opts.Name, _ = cmd.Flags().GetString("new-name")
@@ -60,7 +47,7 @@ func NewUpdateCmd() *cobra.Command {
 				opts.Description = &desc
 			}
 
-			group, _, err := client.Group.Update(cmd.Context(), groupID, opts)
+			updated, _, err := client.Group.Update(cmd.Context(), group.ID, opts)
 			if err != nil {
 				return fmt.Errorf("failed to update group: %w", err)
 			}
@@ -69,15 +56,10 @@ func NewUpdateCmd() *cobra.Command {
 			outputFmt := output.ParseFormat(outputStr)
 
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(schema.GroupFromSDK(group), "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				return base.PrintJSON(cmd, schema.GroupFromSDK(updated))
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "updated group %s (id %d)\n", group.Name, group.ID)
+			fmt.Fprintf(cmd.OutOrStdout(), "updated group %s (id %d)\n", updated.Name, updated.ID)
 			return nil
 		},
 	}

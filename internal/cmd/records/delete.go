@@ -3,24 +3,15 @@
 package records
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
-	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewDeleteCmd returns a new "records delete" command instance.
-// A new instance is returned on each call to prevent flag state from leaking
-// between successive command executions.
-// The zone can be identified by name (--zone-name) or numeric ID (--zone-id).
-// The record ID is the opaque string identifier returned by the Poweradmin API
-// in 4.3.0+ API-mode (Base64-encoded JSON).
-// Output can be a human-readable confirmation (default) or JSON
-// containing the deleted record's ID and zone ID.
 func NewDeleteCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete",
@@ -45,32 +36,13 @@ func NewDeleteCmd() *cobra.Command {
 				return fmt.Errorf("failed to create client: %w", err)
 			}
 
-			// Resolve zone ID — either parse the numeric flag directly,
-			// or look up the zone by name to obtain its ID.
-			var zoneID int
-			if zoneIDStr != "" {
-				zoneID, err = strconv.Atoi(zoneIDStr)
-				if err != nil {
-					return fmt.Errorf("invalid zone-id: %w", err)
-				}
-			} else {
-				zone, _, err := client.Zone.GetByName(cmd.Context(), zoneName)
-				if err != nil {
-					return fmt.Errorf("failed to resolve zone: %w", err)
-				}
-				zoneID = zone.ID
+			zoneID, err := base.ResolveZoneID(cmd, client)
+			if err != nil {
+				return err
 			}
 
-			// Confirm deletion unless --yes flag is set.
-			yes, _ := cmd.Flags().GetBool("yes")
-			if !yes {
-				fmt.Fprintf(cmd.OutOrStdout(), "Delete record (id %s)? [y/N] ", recordID)
-				var confirm string
-				fmt.Fscan(os.Stdin, &confirm)
-				if confirm != "y" && confirm != "Y" {
-					fmt.Fprintln(cmd.OutOrStdout(), "Aborted.")
-					return nil
-				}
+			if !base.Confirm(cmd, fmt.Sprintf("Delete record (id %s)? [y/N] ", recordID)) {
+				return nil
 			}
 
 			_, err = client.Record.Delete(cmd.Context(), zoneID, recordID)
@@ -78,28 +50,20 @@ func NewDeleteCmd() *cobra.Command {
 				return fmt.Errorf("failed to delete record: %w", err)
 			}
 
-			quiet, _ := cmd.Flags().GetBool("quiet")
-			if quiet {
+			if base.IsQuiet(cmd) {
 				return nil
 			}
 
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
-			// JSON output — return the deleted record's ID and zone ID.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(map[string]any{
+				return base.PrintJSON(cmd, map[string]any{
 					"id":      recordID,
 					"zone_id": zoneID,
-				}, "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				})
 			}
 
-			// Default output — human-readable confirmation.
 			fmt.Fprintf(cmd.OutOrStdout(), "deleted record (id %s) from zone (id %d)\n", recordID, zoneID)
 			return nil
 		},
@@ -108,9 +72,8 @@ func NewDeleteCmd() *cobra.Command {
 	cmd.Flags().String("zone-name", "", "Zone name (e.g. example.com)")
 	cmd.Flags().String("zone-id", "", "Zone ID")
 	cmd.Flags().String("id", "", "Record ID (opaque string returned by the API)")
-	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
 	cmd.Flags().BoolP("quiet", "q", false, "Suppress output after deletion")
-
 	return cmd
 }

@@ -3,11 +3,9 @@
 package groups
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
-	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
@@ -24,7 +22,6 @@ func NewDeleteCmd() *cobra.Command {
 
 			name, _ := cmd.Flags().GetString("name")
 			idStr, _ := cmd.Flags().GetString("id")
-
 			if name == "" && idStr == "" {
 				return fmt.Errorf("either --name or --id is required")
 			}
@@ -34,42 +31,21 @@ func NewDeleteCmd() *cobra.Command {
 				return fmt.Errorf("failed to create client: %w", err)
 			}
 
-			var groupID int
-			var groupName string
-			if idStr != "" {
-				id, err := strconv.Atoi(idStr)
-				if err != nil {
-					return fmt.Errorf("invalid id: %w", err)
-				}
-				groupID = id
-			} else {
-				group, _, err := client.Group.GetByName(cmd.Context(), name)
-				if err != nil {
-					return fmt.Errorf("failed to resolve group: %w", err)
-				}
-				groupID = group.ID
-				groupName = group.Name
+			group, err := base.ResolveGroup(cmd, client)
+			if err != nil {
+				return err
 			}
 
-			// Confirm deletion unless --yes flag is set.
-			yes, _ := cmd.Flags().GetBool("yes")
-			if !yes {
-				fmt.Fprintf(cmd.OutOrStdout(), "Delete group (id %d)? [y/N] ", groupID)
-				var confirm string
-				fmt.Fscan(os.Stdin, &confirm)
-				if confirm != "y" && confirm != "Y" {
-					fmt.Fprintln(cmd.OutOrStdout(), "Aborted.")
-					return nil
-				}
+			if !base.Confirm(cmd, fmt.Sprintf("Delete group %s (id %d)? [y/N] ", group.Name, group.ID)) {
+				return nil
 			}
 
-			_, err = client.Group.Delete(cmd.Context(), groupID)
+			_, err = client.Group.Delete(cmd.Context(), group.ID)
 			if err != nil {
 				return fmt.Errorf("failed to delete group: %w", err)
 			}
 
-			quiet, _ := cmd.Flags().GetBool("quiet")
-			if quiet {
+			if base.IsQuiet(cmd) {
 				return nil
 			}
 
@@ -77,18 +53,13 @@ func NewDeleteCmd() *cobra.Command {
 			outputFmt := output.ParseFormat(outputStr)
 
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(map[string]any{
-					"id":   groupID,
-					"name": groupName,
-				}, "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				return base.PrintJSON(cmd, map[string]any{
+					"id":   group.ID,
+					"name": group.Name,
+				})
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "deleted group %s (id %d)\n", groupName, groupID)
+			fmt.Fprintf(cmd.OutOrStdout(), "deleted group %s (id %d)\n", group.Name, group.ID)
 			return nil
 		},
 	}
@@ -98,6 +69,5 @@ func NewDeleteCmd() *cobra.Command {
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
 	cmd.Flags().BoolP("quiet", "q", false, "Suppress output after deletion")
-
 	return cmd
 }

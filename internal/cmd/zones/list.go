@@ -3,11 +3,11 @@
 package zones
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
@@ -15,9 +15,6 @@ import (
 )
 
 // NewListCmd returns a new "zones list" command instance.
-// A new instance is returned on each call to prevent flag state from leaking
-// between successive command executions — this is especially important in tests
-// where the same command may be run multiple times.
 func NewListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
@@ -36,7 +33,6 @@ func NewListCmd() *cobra.Command {
 				return fmt.Errorf("failed to list zones: %w", err)
 			}
 
-			// Apply optional filters client-side.
 			typeFilter, _ := cmd.Flags().GetString("type")
 			nameFilter, _ := cmd.Flags().GetString("name-filter")
 
@@ -57,30 +53,20 @@ func NewListCmd() *cobra.Command {
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
-			// JSON output — print zones wrapped in a root object.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(schema.ZoneListFromSDK(zones), "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				return base.PrintJSON(cmd, schema.ZoneListFromSDK(zones))
 			}
 
-			// Table output — render an aligned table with ID, name and type columns.
-			t := output.New(cmd.OutOrStdout())
-			noHeader, _ := cmd.Flags().GetBool("no-header")
-			t.SetNoHeader(noHeader)
+			t := base.NewTable(cmd)
 			t.AddHeader("ID", "NAME", "TYPE")
 			for _, z := range zones {
-				t.AddRow(
-					strconv.Itoa(z.ID),
-					z.Name,
-					output.Cyan(string(z.Type)),
+				t.AddColoredRow(
+					output.PlainCell(strconv.Itoa(z.ID)),
+					output.PlainCell(z.Name),
+					output.Cell(string(z.Type), output.CyanCode()),
 				)
 			}
 			t.Flush()
-
 			return nil
 		},
 	}
@@ -89,6 +75,5 @@ func NewListCmd() *cobra.Command {
 	cmd.Flags().Bool("no-header", false, "Suppress table header row")
 	cmd.Flags().String("type", "", "Filter by zone type. One of: NATIVE|MASTER|SLAVE")
 	cmd.Flags().String("name-filter", "", "Filter by zone name (substring match)")
-
 	return cmd
 }

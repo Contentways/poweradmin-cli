@@ -3,10 +3,10 @@
 package records
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
@@ -14,11 +14,6 @@ import (
 )
 
 // NewListCmd returns a new "records list" command instance.
-// A new instance is returned on each call to prevent flag state from leaking
-// between successive command executions.
-// The zone can be identified by name (--zone-name) or numeric ID (--zone-id).
-// Output can be formatted as a table (default, content truncated to 50 chars),
-// full table (no truncation) or JSON.
 func NewListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
@@ -27,10 +22,10 @@ func NewListCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			s := state.FromContext(cmd.Context())
 
-			name, _ := cmd.Flags().GetString("zone-name")
-			idStr, _ := cmd.Flags().GetString("zone-id")
+			zoneName, _ := cmd.Flags().GetString("zone-name")
+			zoneIDStr, _ := cmd.Flags().GetString("zone-id")
 
-			if name == "" && idStr == "" {
+			if zoneName == "" && zoneIDStr == "" {
 				return fmt.Errorf("either --zone-name or --zone-id is required")
 			}
 
@@ -39,17 +34,9 @@ func NewListCmd() *cobra.Command {
 				return fmt.Errorf("failed to create client: %w", err)
 			}
 
-			// Resolve zone ID — either parse the numeric flag directly,
-			// or look up the zone by name to obtain its ID.
-			var zoneID int
-			if idStr != "" {
-				fmt.Sscanf(idStr, "%d", &zoneID)
-			} else {
-				zone, _, err := client.Zone.GetByName(cmd.Context(), name)
-				if err != nil {
-					return fmt.Errorf("failed to resolve zone: %w", err)
-				}
-				zoneID = zone.ID
+			zoneID, err := base.ResolveZoneID(cmd, client)
+			if err != nil {
+				return err
 			}
 
 			records, err := client.Record.All(cmd.Context(), zoneID)
@@ -60,40 +47,32 @@ func NewListCmd() *cobra.Command {
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
-			// JSON output — print the full record list and return early.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(schema.RecordListFromSDK(records), "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				return base.PrintJSON(cmd, schema.RecordListFromSDK(records))
 			}
 
-			// Table output — render an aligned table with NAME, TYPE, CONTENT and TTL.
-			// In default table mode, long content values are truncated to 50 characters
-			// to keep the output readable. Use --output full to see the complete content.
-			t := output.New(cmd.OutOrStdout())
+			t := base.NewTable(cmd)
 			t.AddHeader("NAME", "TYPE", "CONTENT", "TTL")
-			noHeader, _ := cmd.Flags().GetBool("no-header")
-			t.SetNoHeader(noHeader)
 			for _, r := range records {
 				content := r.Content
 				if outputFmt == output.FormatTable {
 					content = output.Truncate(content, 50)
 				}
-				t.AddRow(r.Name, output.Cyan(r.Type), content, strconv.Itoa(r.TTL))
+				t.AddColoredRow(
+					output.PlainCell(r.Name),
+					output.Cell(r.Type, output.CyanCode()),
+					output.PlainCell(content),
+					output.PlainCell(strconv.Itoa(r.TTL)),
+				)
 			}
 			t.Flush()
-
 			return nil
 		},
 	}
 
 	cmd.Flags().String("zone-name", "", "Zone name (e.g. example.com)")
 	cmd.Flags().String("zone-id", "", "Zone ID")
-	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|full|json")
 	cmd.Flags().Bool("no-header", false, "Suppress table header row")
-
 	return cmd
 }

@@ -3,22 +3,15 @@
 package users
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
-	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewDeleteCmd returns a new "users delete" command instance.
-// A new instance is returned on each call to prevent flag state from leaking
-// between successive command executions.
-// The user can be identified by username (--name) or numeric ID (--id).
-// Output can be a human-readable confirmation (default) or JSON
-// containing the deleted user's ID and username.
 func NewDeleteCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete",
@@ -39,74 +32,43 @@ func NewDeleteCmd() *cobra.Command {
 				return fmt.Errorf("failed to create client: %w", err)
 			}
 
-			// Resolve user ID — either parse the numeric flag directly,
-			// or look up the user by username to obtain the ID.
-			var userID int
-			var username string
-			if idStr != "" {
-				id, err := strconv.Atoi(idStr)
-				if err != nil {
-					return fmt.Errorf("invalid id: %w", err)
-				}
-				userID = id
-			} else {
-				user, _, err := client.User.GetByName(cmd.Context(), name)
-				if err != nil {
-					return fmt.Errorf("failed to resolve user: %w", err)
-				}
-				userID = user.ID
-				username = user.Username
+			user, err := base.ResolveUser(cmd, client)
+			if err != nil {
+				return err
 			}
 
-			// Confirm deletion unless --yes flag is set.
-			yes, _ := cmd.Flags().GetBool("yes")
-			if !yes {
-				fmt.Fprintf(cmd.OutOrStdout(), "Delete record (id %d)? [y/N] ", userID)
-				var confirm string
-				fmt.Fscan(os.Stdin, &confirm)
-				if confirm != "y" && confirm != "Y" {
-					fmt.Fprintln(cmd.OutOrStdout(), "Aborted.")
-					return nil
-				}
+			if !base.Confirm(cmd, fmt.Sprintf("Delete user %s (id %d)? [y/N] ", user.Username, user.ID)) {
+				return nil
 			}
 
-			_, err = client.User.Delete(cmd.Context(), userID)
+			_, err = client.User.Delete(cmd.Context(), user.ID)
 			if err != nil {
 				return fmt.Errorf("failed to delete user: %w", err)
 			}
 
-			quiet, _ := cmd.Flags().GetBool("quiet")
-			if quiet {
+			if base.IsQuiet(cmd) {
 				return nil
 			}
 
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
-			// JSON output — return the deleted user's ID and username.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(map[string]any{
-					"id":       userID,
-					"username": username,
-				}, "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				return base.PrintJSON(cmd, map[string]any{
+					"id":       user.ID,
+					"username": user.Username,
+				})
 			}
 
-			// Default output — human-readable confirmation.
-			fmt.Fprintf(cmd.OutOrStdout(), "deleted user %s (id %d)\n", username, userID)
+			fmt.Fprintf(cmd.OutOrStdout(), "deleted user %s (id %d)\n", user.Username, user.ID)
 			return nil
 		},
 	}
 
 	cmd.Flags().String("name", "", "Username to identify the user")
 	cmd.Flags().String("id", "", "User ID to identify the user")
-	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
-	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID (create) or suppress output (delete)")
-
+	cmd.Flags().BoolP("quiet", "q", false, "Suppress output after deletion")
 	return cmd
 }

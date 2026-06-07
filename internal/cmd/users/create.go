@@ -3,11 +3,11 @@
 package users
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
@@ -15,10 +15,6 @@ import (
 )
 
 // NewCreateCmd returns a new "users create" command instance.
-// A new instance is returned on each call to prevent flag state from leaking
-// between successive command executions.
-// Output can be a human-readable confirmation (default) or JSON
-// containing the new user's ID and username.
 func NewCreateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create",
@@ -40,6 +36,7 @@ func NewCreateCmd() *cobra.Command {
 				return fmt.Errorf("--email is required")
 			}
 
+			// If password was not provided via flag, prompt interactively.
 			if password == "" {
 				fmt.Fprint(cmd.OutOrStdout(), "Password: ")
 				pw, err := term.ReadPassword(int(os.Stdin.Fd()))
@@ -58,7 +55,6 @@ func NewCreateCmd() *cobra.Command {
 				if string(pw) != string(pw2) {
 					return fmt.Errorf("passwords do not match")
 				}
-
 				password = string(pw)
 				if password == "" {
 					return fmt.Errorf("password is required")
@@ -84,26 +80,19 @@ func NewCreateCmd() *cobra.Command {
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
-			// JSON output — return the new user's ID and username.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(map[string]any{
+				return base.PrintJSON(cmd, map[string]any{
 					"id":       id,
 					"username": username,
 					"email":    email,
-				}, "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				})
 			}
 
-			// Default output — human-readable confirmation.
-			quiet, _ := cmd.Flags().GetBool("quiet")
-			if quiet {
+			if base.IsQuiet(cmd) {
 				fmt.Fprintln(cmd.OutOrStdout(), id)
 				return nil
 			}
+
 			fmt.Fprintf(cmd.OutOrStdout(), "created user %s (id %d)\n", username, id)
 			return nil
 		},
@@ -114,8 +103,7 @@ func NewCreateCmd() *cobra.Command {
 	cmd.Flags().String("email", "", "Email address (required)")
 	cmd.Flags().String("fullname", "", "Full name")
 	cmd.Flags().Bool("active", true, "Whether the user is active (default: true)")
-	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
-	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID (create) or suppress output (delete)")
-
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID of the created user")
 	return cmd
 }

@@ -3,10 +3,10 @@
 package groups
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
@@ -47,19 +47,13 @@ func NewCreateCmd() *cobra.Command {
 			outputFmt := output.ParseFormat(outputStr)
 
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(map[string]any{
+				return base.PrintJSON(cmd, map[string]any{
 					"id":   id,
 					"name": name,
-				}, "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				})
 			}
 
-			quiet, _ := cmd.Flags().GetBool("quiet")
-			if quiet {
+			if base.IsQuiet(cmd) {
 				fmt.Fprintln(cmd.OutOrStdout(), id)
 				return nil
 			}
@@ -73,7 +67,6 @@ func NewCreateCmd() *cobra.Command {
 	cmd.Flags().String("description", "", "Group description")
 	cmd.Flags().Int("perm-template-id", 0, "Permission template ID")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
-	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID (create) or suppress output (delete)")
-
+	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID of the created group")
 	return cmd
 }

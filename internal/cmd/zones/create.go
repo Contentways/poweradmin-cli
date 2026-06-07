@@ -3,21 +3,16 @@
 package zones
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewCreateCmd returns a new "zones create" command instance.
-// A new instance is returned on each call to prevent flag state from leaking
-// between successive command executions.
-// The zone name is passed as a positional argument.
-// Output can be a human-readable confirmation (default) or JSON
-// containing the new zone's ID, name and type.
 func NewCreateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create <name>",
@@ -58,27 +53,20 @@ func NewCreateCmd() *cobra.Command {
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
-			// JSON output — return the new zone's ID, name and type.
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(map[string]any{
+				return base.PrintJSON(cmd, map[string]any{
 					"id":          id,
 					"name":        args[0],
 					"type":        zoneType,
 					"nameservers": nameservers,
-				}, "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				})
 			}
 
-			// Default output — human-readable confirmation.
-			quiet, _ := cmd.Flags().GetBool("quiet")
-			if quiet {
+			if base.IsQuiet(cmd) {
 				fmt.Fprintln(cmd.OutOrStdout(), id)
 				return nil
 			}
+
 			fmt.Fprintf(cmd.OutOrStdout(), "created zone %s (id %d)\n", args[0], id)
 			return nil
 		},
@@ -86,7 +74,7 @@ func NewCreateCmd() *cobra.Command {
 
 	cmd.Flags().String("type", "NATIVE", "Zone type. One of: NATIVE|MASTER|SLAVE")
 	cmd.Flags().StringArray("nameserver", []string{}, "Nameserver to add (can be specified multiple times)")
-	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json|full")
-	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID (create) or suppress output (delete)")
+	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID of the created zone")
 	return cmd
 }

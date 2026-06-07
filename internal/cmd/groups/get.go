@@ -3,11 +3,9 @@
 package groups
 
 import (
-	"encoding/json"
 	"fmt"
-	"strconv"
 
-	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
@@ -25,7 +23,6 @@ func NewGetCmd() *cobra.Command {
 
 			name, _ := cmd.Flags().GetString("name")
 			idStr, _ := cmd.Flags().GetString("id")
-
 			if name == "" && idStr == "" {
 				return fmt.Errorf("either --name or --id is required")
 			}
@@ -35,31 +32,16 @@ func NewGetCmd() *cobra.Command {
 				return fmt.Errorf("failed to create client: %w", err)
 			}
 
-			var group *poweradmin.Group
-			var getErr error
-			if idStr != "" {
-				id, err := strconv.Atoi(idStr)
-				if err != nil {
-					return fmt.Errorf("invalid id: %w", err)
-				}
-				group, _, getErr = client.Group.GetByID(cmd.Context(), id)
-			} else {
-				group, _, getErr = client.Group.GetByName(cmd.Context(), name)
-			}
-			if getErr != nil {
-				return fmt.Errorf("failed to get group: %w", getErr)
+			group, err := base.ResolveGroup(cmd, client)
+			if err != nil {
+				return err
 			}
 
 			outputStr, _ := cmd.Flags().GetString("output")
 			outputFmt := output.ParseFormat(outputStr)
 
 			if outputFmt == output.FormatJSON {
-				data, err := json.MarshalIndent(schema.GroupFromSDK(group), "", "  ")
-				if err != nil {
-					return fmt.Errorf("failed to marshal json: %w", err)
-				}
-				fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				return nil
+				return base.PrintJSON(cmd, schema.GroupFromSDK(group))
 			}
 
 			fmt.Fprintf(cmd.OutOrStdout(), "ID:          %d\n", group.ID)
@@ -67,7 +49,6 @@ func NewGetCmd() *cobra.Command {
 			fmt.Fprintf(cmd.OutOrStdout(), "Description: %s\n", group.Description)
 			fmt.Fprintf(cmd.OutOrStdout(), "Members:     %d\n", group.MemberCount)
 			fmt.Fprintf(cmd.OutOrStdout(), "Zones:       %d\n", group.ZoneCount)
-
 			return nil
 		},
 	}
