@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewMemberRemoveCmd returns a new "groups member-remove" command instance.
-func NewMemberRemoveCmd() *cobra.Command {
+func NewMemberRemoveCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "member-remove",
 		Short: "Remove a user from a group",
@@ -55,5 +56,7 @@ func NewMemberRemoveCmd() *cobra.Command {
 
 	cmd.Flags().String("group-id", "", "Group ID (required)")
 	cmd.Flags().String("user-id", "", "User ID to remove (required)")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

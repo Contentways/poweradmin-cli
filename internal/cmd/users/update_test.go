@@ -25,7 +25,7 @@ func TestUsersUpdate(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewUpdateCmd(), []string{
+	err := fx.Run(users.NewUpdateCmd(nil), []string{
 		"--name", "max",
 		"--email", "new@example.com",
 	})
@@ -51,7 +51,7 @@ func TestUsersUpdateJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewUpdateCmd(), []string{
+	err := fx.Run(users.NewUpdateCmd(nil), []string{
 		"--name", "max",
 		"--email", "new@example.com",
 		"--output", "json",
@@ -69,7 +69,7 @@ func TestUsersUpdateJSON(t *testing.T) {
 func TestUsersUpdateMissingFlags(t *testing.T) {
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{}, nil)
 
-	err := fx.Run(users.NewUpdateCmd(), []string{})
+	err := fx.Run(users.NewUpdateCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
 	}
@@ -87,7 +87,7 @@ func TestUsersUpdateError(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewUpdateCmd(), []string{
+	err := fx.Run(users.NewUpdateCmd(nil), []string{
 		"--name", "max",
 		"--email", "new@example.com",
 	})

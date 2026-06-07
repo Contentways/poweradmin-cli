@@ -23,7 +23,7 @@ func TestGroupsList(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewListCmd(), []string{})
+	err := fx.Run(groups.NewListCmd(nil), []string{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -42,7 +42,7 @@ func TestGroupsListJSON(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewListCmd(), []string{"-o", "json"})
+	err := fx.Run(groups.NewListCmd(nil), []string{"-o", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -59,7 +59,7 @@ func TestGroupsListError(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewListCmd(), []string{})
+	err := fx.Run(groups.NewListCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

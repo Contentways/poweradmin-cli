@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/schema"
 	"github.com/contentways/poweradmin-cli/internal/state"
@@ -21,7 +22,7 @@ import (
 // The record is identified by its opaque string ID (--id).
 // Only flags that are explicitly set are sent to the API — unset flags are omitted.
 // Output can be a human-readable confirmation (default) or JSON.
-func NewUpdateCmd() *cobra.Command {
+func NewUpdateCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update a DNS record",
@@ -119,5 +120,7 @@ func NewUpdateCmd() *cobra.Command {
 	cmd.Flags().Int("priority", 0, "New priority (for MX records)")
 	cmd.Flags().Bool("disabled", false, "Disable the record")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

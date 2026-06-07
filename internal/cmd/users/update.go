@@ -14,7 +14,7 @@ import (
 )
 
 // NewUpdateCmd returns a new "users update" command instance.
-func NewUpdateCmd() *cobra.Command {
+func NewUpdateCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update a user",
@@ -77,5 +77,7 @@ func NewUpdateCmd() *cobra.Command {
 	cmd.Flags().String("password", "", "New password")
 	cmd.Flags().Bool("active", true, "Whether the user is active")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

@@ -22,7 +22,7 @@ func TestUsersGetByName(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewGetCmd(), []string{"--name", "max"})
+	err := fx.Run(users.NewGetCmd(nil), []string{"--name", "max"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -42,7 +42,7 @@ func TestUsersGetJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewGetCmd(), []string{"--name", "max", "--output", "json"})
+	err := fx.Run(users.NewGetCmd(nil), []string{"--name", "max", "--output", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -56,7 +56,7 @@ func TestUsersGetJSON(t *testing.T) {
 func TestUsersGetMissingFlags(t *testing.T) {
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{}, nil)
 
-	err := fx.Run(users.NewGetCmd(), []string{})
+	err := fx.Run(users.NewGetCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
 	}
@@ -71,7 +71,7 @@ func TestUsersGetError(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewGetCmd(), []string{"--name", "max"})
+	err := fx.Run(users.NewGetCmd(nil), []string{"--name", "max"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

@@ -27,7 +27,7 @@ func TestRecordsDelete(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(records.NewDeleteCmd(), []string{
+	err := fx.Run(records.NewDeleteCmd(nil), []string{
 		"--zone-name", "example.com",
 		"--id", "rec-42",
 		"--yes",
@@ -56,7 +56,7 @@ func TestRecordsDeleteJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(records.NewDeleteCmd(), []string{
+	err := fx.Run(records.NewDeleteCmd(nil), []string{
 		"--zone-name", "example.com",
 		"--id", "rec-42",
 		"--output", "json",
@@ -74,7 +74,7 @@ func TestRecordsDeleteJSON(t *testing.T) {
 
 func TestRecordsDeleteMissingFlags(t *testing.T) {
 	fx := testutil.NewFixtureWithMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{})
-	err := fx.Run(records.NewDeleteCmd(), []string{})
+	err := fx.Run(records.NewDeleteCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
 	}
@@ -92,7 +92,7 @@ func TestRecordsDeleteError(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
-	err := fx.Run(records.NewDeleteCmd(), []string{
+	err := fx.Run(records.NewDeleteCmd(nil), []string{
 		"--zone-name", "example.com",
 		"--id", "rec-42",
 		"--yes",

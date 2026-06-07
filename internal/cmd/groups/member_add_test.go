@@ -20,7 +20,7 @@ func TestGroupsMemberAdd(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewMemberAddCmd(), []string{"--group-id", "1", "--user-id", "2"})
+	err := fx.Run(groups.NewMemberAddCmd(nil), []string{"--group-id", "1", "--user-id", "2"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -32,7 +32,7 @@ func TestGroupsMemberAdd(t *testing.T) {
 
 func TestGroupsMemberAddMissingFlags(t *testing.T) {
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{})
-	err := fx.Run(groups.NewMemberAddCmd(), []string{})
+	err := fx.Run(groups.NewMemberAddCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
 	}
@@ -45,7 +45,7 @@ func TestGroupsMemberAddError(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewMemberAddCmd(), []string{"--group-id", "1", "--user-id", "2"})
+	err := fx.Run(groups.NewMemberAddCmd(nil), []string{"--group-id", "1", "--user-id", "2"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

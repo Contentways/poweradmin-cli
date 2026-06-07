@@ -27,7 +27,7 @@ func TestZonesList(t *testing.T) {
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
 
 	// Act — run the list command.
-	err := fx.Run(zones.NewListCmd(), []string{})
+	err := fx.Run(zones.NewListCmd(nil), []string{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -53,7 +53,7 @@ func TestZonesListJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
 
-	err := fx.Run(zones.NewListCmd(), []string{"--output", "json"})
+	err := fx.Run(zones.NewListCmd(nil), []string{"--output", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -71,7 +71,7 @@ func TestZonesListError(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
-	err := fx.Run(zones.NewListCmd(), []string{})
+	err := fx.Run(zones.NewListCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
@@ -89,7 +89,7 @@ func TestZonesListFilterByType(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, mockZone, nil, nil, nil)
 
-	err := fx.Run(zones.NewListCmd(), []string{"--type", "NATIVE"})
+	err := fx.Run(zones.NewListCmd(nil), []string{"--type", "NATIVE"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -115,7 +115,7 @@ func TestZonesListFilterByName(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, mockZone, nil, nil, nil)
 
-	err := fx.Run(zones.NewListCmd(), []string{"--name-filter", "contentways"})
+	err := fx.Run(zones.NewListCmd(nil), []string{"--name-filter", "contentways"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

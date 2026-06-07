@@ -16,7 +16,7 @@ import (
 )
 
 // NewListCmd returns a new "records list" command instance.
-func NewListCmd() *cobra.Command {
+func NewListCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "List all records in a zone",
@@ -103,5 +103,7 @@ func NewListCmd() *cobra.Command {
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|full|json")
 	cmd.Flags().Bool("no-header", false, "Suppress table header row")
 	cmd.Flags().String("sort", "", "Sort by field. One of: name|type|ttl")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

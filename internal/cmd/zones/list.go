@@ -16,7 +16,7 @@ import (
 )
 
 // NewListCmd returns a new "zones list" command instance.
-func NewListCmd() *cobra.Command {
+func NewListCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "List all DNS zones",
@@ -91,5 +91,7 @@ func NewListCmd() *cobra.Command {
 	cmd.Flags().String("type", "", "Filter by zone type. One of: NATIVE|MASTER|SLAVE")
 	cmd.Flags().String("name-filter", "", "Filter by zone name (substring match)")
 	cmd.Flags().String("sort", "", "Sort by field. One of: id|name|type")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

@@ -6,24 +6,25 @@
 package records
 
 import (
+	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewRecordsCommand builds and returns the "records" subcommand group.
 // All record-related commands are registered here and made available
 // under the "poweradmin records" namespace.
-func NewRecordsCommand() *cobra.Command {
+func NewRecordsCommand(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "records",
 		Short: "Manage DNS records",
 		Long:  `Manage DNS records in Poweradmin — list, create and delete records.`,
 	}
 
-	cmd.AddCommand(NewListCmd())
+	cmd.AddCommand(NewListCmd(s))
 	cmd.AddCommand(NewCreateCmd())
-	cmd.AddCommand(NewDeleteCmd())
-	cmd.AddCommand(NewUpdateCmd())
-	cmd.AddCommand(NewGetCmd())
+	cmd.AddCommand(NewDeleteCmd(s))
+	cmd.AddCommand(NewUpdateCmd(s))
+	cmd.AddCommand(NewGetCmd(s))
 
 	return cmd
 }

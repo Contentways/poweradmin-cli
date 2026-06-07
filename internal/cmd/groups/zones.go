@@ -13,7 +13,7 @@ import (
 )
 
 // NewZonesCmd returns a new "groups zones" command instance.
-func NewZonesCmd() *cobra.Command {
+func NewZonesCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "zones",
 		Short: "List zones of a group",

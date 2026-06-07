@@ -7,13 +7,14 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/output"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewMembersCmd returns a new "groups members" command instance.
-func NewMembersCmd() *cobra.Command {
+func NewMembersCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "members",
 		Short: "List members of a group",
@@ -84,6 +85,8 @@ func NewMembersCmd() *cobra.Command {
 	cmd.Flags().String("id", "", "Group ID")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().Bool("no-header", false, "Suppress table header row")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 
 	return cmd
 }

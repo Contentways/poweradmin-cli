@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewZoneRemoveCmd returns a new "groups zone-remove" command instance.
-func NewZoneRemoveCmd() *cobra.Command {
+func NewZoneRemoveCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "zone-remove",
 		Short: "Remove a zone from a group",
@@ -55,5 +56,7 @@ func NewZoneRemoveCmd() *cobra.Command {
 
 	cmd.Flags().String("group-id", "", "Group ID (required)")
 	cmd.Flags().String("zone-id", "", "Zone ID to remove (required)")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

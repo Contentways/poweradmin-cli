@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewMemberAddCmd returns a new "groups member-add" command instance.
-func NewMemberAddCmd() *cobra.Command {
+func NewMemberAddCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "member-add",
 		Short: "Add a user to a group",
@@ -55,5 +56,7 @@ func NewMemberAddCmd() *cobra.Command {
 
 	cmd.Flags().String("group-id", "", "Group ID (required)")
 	cmd.Flags().String("user-id", "", "User ID to add (required)")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

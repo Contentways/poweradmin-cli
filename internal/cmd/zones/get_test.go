@@ -29,7 +29,7 @@ func TestZonesGetByName(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(zones.NewGetCmd(), []string{"--name", "example.com"})
+	err := fx.Run(zones.NewGetCmd(nil), []string{"--name", "example.com"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -59,7 +59,7 @@ func TestZonesGetByNameJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(zones.NewGetCmd(), []string{"--name", "example.com", "--output", "json"})
+	err := fx.Run(zones.NewGetCmd(nil), []string{"--name", "example.com", "--output", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -75,7 +75,7 @@ func TestZonesGetByNameJSON(t *testing.T) {
 
 func TestZonesGetMissingFlags(t *testing.T) {
 	fx := testutil.NewFixtureWithMocks(t, &testutil.MockZoneClient{}, nil)
-	err := fx.Run(zones.NewGetCmd(), []string{})
+	err := fx.Run(zones.NewGetCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
 	}
@@ -88,7 +88,7 @@ func TestZonesGetByNameError(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
-	err := fx.Run(zones.NewGetCmd(), []string{"--name", "example.com"})
+	err := fx.Run(zones.NewGetCmd(nil), []string{"--name", "example.com"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

@@ -65,10 +65,10 @@ func NewRootCommand(s *state.State) *cobra.Command {
 	root.PersistentFlags().StringP("api-key", "k", "", "Poweradmin API key (overrides config and env)")
 
 	// Register all resource subcommands.
-	root.AddCommand(zones.NewZonesCommand())
-	root.AddCommand(records.NewRecordsCommand())
-	root.AddCommand(users.NewUsersCommand())
-	root.AddCommand(groups.NewGroupsCommand())
+	root.AddCommand(zones.NewZonesCommand(s))
+	root.AddCommand(records.NewRecordsCommand(s))
+	root.AddCommand(users.NewUsersCommand(s))
+	root.AddCommand(groups.NewGroupsCommand(s))
 	root.AddCommand(cmdversion.NewVersionCmd())
 
 	return root

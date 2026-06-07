@@ -21,7 +21,7 @@ import (
 // Note: the Poweradmin API does not reliably support GET by record ID,
 // so all records in the zone are fetched and searched client-side.
 // Output can be a human-readable key-value summary (default) or JSON.
-func NewGetCmd() *cobra.Command {
+func NewGetCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "Get a DNS record by ID",
@@ -92,5 +92,7 @@ func NewGetCmd() *cobra.Command {
 	cmd.Flags().String("zone-id", "", "Zone ID")
 	cmd.Flags().String("id", "", "Record ID (required)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

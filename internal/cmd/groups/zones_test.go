@@ -25,7 +25,7 @@ func TestGroupsZones(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewZonesCmd(), []string{"--name", "Administrators"})
+	err := fx.Run(groups.NewZonesCmd(nil), []string{"--name", "Administrators"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -37,7 +37,7 @@ func TestGroupsZones(t *testing.T) {
 
 func TestGroupsZonesMissingFlags(t *testing.T) {
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{})
-	err := fx.Run(groups.NewZonesCmd(), []string{})
+	err := fx.Run(groups.NewZonesCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
 	}
@@ -53,7 +53,7 @@ func TestGroupsZonesError(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewZonesCmd(), []string{"--name", "Administrators"})
+	err := fx.Run(groups.NewZonesCmd(nil), []string{"--name", "Administrators"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

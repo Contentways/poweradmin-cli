@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewRecordsCommand(t *testing.T) {
-	cmd := records.NewRecordsCommand()
+	cmd := records.NewRecordsCommand(nil)
 
 	if cmd.Use != "records" {
 		t.Fatalf("Use = %q", cmd.Use)

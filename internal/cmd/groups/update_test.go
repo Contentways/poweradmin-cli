@@ -23,7 +23,7 @@ func TestGroupsUpdate(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewUpdateCmd(), []string{"--name", "TestGroup", "--new-name", "NewName"})
+	err := fx.Run(groups.NewUpdateCmd(nil), []string{"--name", "TestGroup", "--new-name", "NewName"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -43,7 +43,7 @@ func TestGroupsUpdateJSON(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewUpdateCmd(), []string{"--name", "TestGroup", "--new-name", "NewName", "-o", "json"})
+	err := fx.Run(groups.NewUpdateCmd(nil), []string{"--name", "TestGroup", "--new-name", "NewName", "-o", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -55,7 +55,7 @@ func TestGroupsUpdateJSON(t *testing.T) {
 
 func TestGroupsUpdateMissingFlags(t *testing.T) {
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{})
-	err := fx.Run(groups.NewUpdateCmd(), []string{})
+	err := fx.Run(groups.NewUpdateCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
 	}
@@ -71,7 +71,7 @@ func TestGroupsUpdateError(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
-	err := fx.Run(groups.NewUpdateCmd(), []string{"--name", "TestGroup", "--new-name", "NewName"})
+	err := fx.Run(groups.NewUpdateCmd(nil), []string{"--name", "TestGroup", "--new-name", "NewName"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

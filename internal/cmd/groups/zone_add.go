@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/contentways/poweradmin-cli/internal/cmd/base"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewZoneAddCmd returns a new "groups zone-add" command instance.
-func NewZoneAddCmd() *cobra.Command {
+func NewZoneAddCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "zone-add",
 		Short: "Add a zone to a group",
@@ -55,5 +56,7 @@ func NewZoneAddCmd() *cobra.Command {
 
 	cmd.Flags().String("group-id", "", "Group ID (required)")
 	cmd.Flags().String("zone-id", "", "Zone ID to add (required)")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

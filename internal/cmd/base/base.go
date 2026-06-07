@@ -4,7 +4,7 @@
 // Package base provides shared helpers for CLI commands.
 // It reduces boilerplate in command implementations by centralising
 // common patterns: JSON output, table creation, delete confirmation,
-// zone/user/group resolution by name or ID, and quiet mode.
+// zone/user/group resolution by name or ID, quiet mode and shell completion.
 package base
 
 import (
@@ -12,9 +12,11 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"contentways.dev/contentways/poweradmin-go/v2/poweradmin"
 	"github.com/contentways/poweradmin-cli/internal/output"
+	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
@@ -152,4 +154,72 @@ func ResolveZoneID(cmd *cobra.Command, client *poweradmin.Client) (int, error) {
 		return 0, fmt.Errorf("failed to resolve zone: %w", err)
 	}
 	return zone.ID, nil
+}
+
+// ZoneNameCompletion returns a Cobra completion function that fetches zone names
+// from the Poweradmin API. Used for --name and --zone-name flag completion.
+// The State is passed directly to avoid depending on the command context,
+// which is not available during shell completion.
+func ZoneNameCompletion(s *state.State) func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		client, err := s.Client()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		zones, err := client.Zone.All(cmd.Context())
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		var names []string
+		for _, z := range zones {
+			if strings.HasPrefix(z.Name, toComplete) {
+				names = append(names, z.Name)
+			}
+		}
+		return names, cobra.ShellCompDirectiveNoFileComp
+	}
+}
+
+// UserNameCompletion returns a Cobra completion function that fetches usernames
+// from the Poweradmin API. Used for --name flag completion on user commands.
+func UserNameCompletion(s *state.State) func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		client, err := s.Client()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		users, err := client.User.All(cmd.Context())
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		var names []string
+		for _, u := range users {
+			if strings.HasPrefix(u.Username, toComplete) {
+				names = append(names, u.Username)
+			}
+		}
+		return names, cobra.ShellCompDirectiveNoFileComp
+	}
+}
+
+// GroupNameCompletion returns a Cobra completion function that fetches group names
+// from the Poweradmin API. Used for --name flag completion on group commands.
+func GroupNameCompletion(s *state.State) func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		client, err := s.Client()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		groups, err := client.Group.All(cmd.Context())
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		var names []string
+		for _, g := range groups {
+			if strings.HasPrefix(g.Name, toComplete) {
+				names = append(names, g.Name)
+			}
+		}
+		return names, cobra.ShellCompDirectiveNoFileComp
+	}
 }

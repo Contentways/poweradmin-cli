@@ -25,7 +25,7 @@ func TestUsersSetPermissionTemplate(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewSetPermissionTemplateCmd(), []string{
+	err := fx.Run(users.NewSetPermissionTemplateCmd(nil), []string{
 		"--name", "max",
 		"--template-id", "5",
 	})
@@ -54,7 +54,7 @@ func TestUsersSetPermissionTemplateJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewSetPermissionTemplateCmd(), []string{
+	err := fx.Run(users.NewSetPermissionTemplateCmd(nil), []string{
 		"--name", "max",
 		"--template-id", "5",
 		"--output", "json",
@@ -75,7 +75,7 @@ func TestUsersSetPermissionTemplateJSON(t *testing.T) {
 func TestUsersSetPermissionTemplateMissingFlags(t *testing.T) {
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{}, nil)
 
-	err := fx.Run(users.NewSetPermissionTemplateCmd(), []string{})
+	err := fx.Run(users.NewSetPermissionTemplateCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
 	}
@@ -93,7 +93,7 @@ func TestUsersSetPermissionTemplateError(t *testing.T) {
 
 	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
 
-	err := fx.Run(users.NewSetPermissionTemplateCmd(), []string{
+	err := fx.Run(users.NewSetPermissionTemplateCmd(nil), []string{
 		"--name", "max",
 		"--template-id", "5",
 	})

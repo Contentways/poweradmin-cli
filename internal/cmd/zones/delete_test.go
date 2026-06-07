@@ -25,7 +25,7 @@ func TestZonesDelete(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
 
-	err := fx.Run(zones.NewDeleteCmd(), []string{"--name", "example.com", "--yes"})
+	err := fx.Run(zones.NewDeleteCmd(nil), []string{"--name", "example.com", "--yes"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -51,7 +51,7 @@ func TestZonesDeleteJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
 
-	err := fx.Run(zones.NewDeleteCmd(), []string{"--name", "example.com", "--yes", "--output", "json"})
+	err := fx.Run(zones.NewDeleteCmd(nil), []string{"--name", "example.com", "--yes", "--output", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -67,7 +67,7 @@ func TestZonesDeleteJSON(t *testing.T) {
 
 func TestZonesDeleteMissingFlags(t *testing.T) {
 	fx := testutil.NewFixtureWithMocks(t, &testutil.MockZoneClient{}, nil)
-	err := fx.Run(zones.NewDeleteCmd(), []string{})
+	err := fx.Run(zones.NewDeleteCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
 	}
@@ -83,7 +83,7 @@ func TestZonesDeleteError(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithMocks(t, mockZone, nil)
-	err := fx.Run(zones.NewDeleteCmd(), []string{"--name", "example.com", "--yes"})
+	err := fx.Run(zones.NewDeleteCmd(nil), []string{"--name", "example.com", "--yes"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

@@ -6,13 +6,14 @@
 package users
 
 import (
+	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewUsersCommand builds and returns the "users" subcommand group.
 // All user-related commands are registered here and made available
 // under the "poweradmin users" namespace.
-func NewUsersCommand() *cobra.Command {
+func NewUsersCommand(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "users",
 		Short: "Manage Poweradmin users",
@@ -20,11 +21,11 @@ func NewUsersCommand() *cobra.Command {
 	}
 
 	cmd.AddCommand(NewListCmd())
-	cmd.AddCommand(NewGetCmd())
+	cmd.AddCommand(NewGetCmd(s))
 	cmd.AddCommand(NewCreateCmd())
-	cmd.AddCommand(NewUpdateCmd())
-	cmd.AddCommand(NewDeleteCmd())
-	cmd.AddCommand(NewSetPermissionTemplateCmd())
+	cmd.AddCommand(NewUpdateCmd(s))
+	cmd.AddCommand(NewDeleteCmd(s))
+	cmd.AddCommand(NewSetPermissionTemplateCmd(s))
 
 	return cmd
 }

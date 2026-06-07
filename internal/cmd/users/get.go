@@ -13,7 +13,7 @@ import (
 )
 
 // NewGetCmd returns a new "users get" command instance.
-func NewGetCmd() *cobra.Command {
+func NewGetCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "Get a user by name or ID",
@@ -62,5 +62,7 @@ func NewGetCmd() *cobra.Command {
 	cmd.Flags().String("name", "", "Username")
 	cmd.Flags().String("id", "", "User ID")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

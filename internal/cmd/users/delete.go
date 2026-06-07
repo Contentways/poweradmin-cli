@@ -12,7 +12,7 @@ import (
 )
 
 // NewDeleteCmd returns a new "users delete" command instance.
-func NewDeleteCmd() *cobra.Command {
+func NewDeleteCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete",
 		Short: "Delete a user",
@@ -70,5 +70,7 @@ func NewDeleteCmd() *cobra.Command {
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
 	cmd.Flags().BoolP("quiet", "q", false, "Suppress output after deletion")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

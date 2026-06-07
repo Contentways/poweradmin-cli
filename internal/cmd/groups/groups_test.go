@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewGroupsCommand(t *testing.T) {
-	cmd := groups.NewGroupsCommand()
+	cmd := groups.NewGroupsCommand(nil)
 
 	if cmd.Use != "groups" {
 		t.Fatalf("Use = %q", cmd.Use)

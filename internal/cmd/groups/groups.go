@@ -7,30 +7,31 @@
 package groups
 
 import (
+	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
 )
 
 // NewGroupsCommand builds and returns the "groups" subcommand group.
 // All group-related commands are registered here and made available
 // under the "poweradmin groups" namespace.
-func NewGroupsCommand() *cobra.Command {
+func NewGroupsCommand(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "groups",
 		Short: "Manage Poweradmin groups",
 		Long:  `Manage Poweradmin groups — list, get, create, update, delete and manage members and zones.`,
 	}
 
-	cmd.AddCommand(NewListCmd())
-	cmd.AddCommand(NewGetCmd())
+	cmd.AddCommand(NewListCmd(s))
+	cmd.AddCommand(NewGetCmd(s))
 	cmd.AddCommand(NewCreateCmd())
-	cmd.AddCommand(NewUpdateCmd())
-	cmd.AddCommand(NewDeleteCmd())
-	cmd.AddCommand(NewMembersCmd())
-	cmd.AddCommand(NewMemberAddCmd())
-	cmd.AddCommand(NewMemberRemoveCmd())
-	cmd.AddCommand(NewZonesCmd())
-	cmd.AddCommand(NewZoneAddCmd())
-	cmd.AddCommand(NewZoneRemoveCmd())
+	cmd.AddCommand(NewUpdateCmd(s))
+	cmd.AddCommand(NewDeleteCmd(s))
+	cmd.AddCommand(NewMembersCmd(s))
+	cmd.AddCommand(NewMemberAddCmd(s))
+	cmd.AddCommand(NewMemberRemoveCmd(s))
+	cmd.AddCommand(NewZonesCmd(s))
+	cmd.AddCommand(NewZoneAddCmd(s))
+	cmd.AddCommand(NewZoneRemoveCmd(s))
 
 	return cmd
 }

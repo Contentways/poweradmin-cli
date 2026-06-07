@@ -14,7 +14,7 @@ import (
 )
 
 // NewUpdateCmd returns a new "groups update" command instance.
-func NewUpdateCmd() *cobra.Command {
+func NewUpdateCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update a group",
@@ -69,5 +69,7 @@ func NewUpdateCmd() *cobra.Command {
 	cmd.Flags().String("new-name", "", "New group name")
 	cmd.Flags().String("description", "", "New description")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

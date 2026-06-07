@@ -30,7 +30,7 @@ func TestRecordsList(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(records.NewListCmd(), []string{"--zone-name", "example.com"})
+	err := fx.Run(records.NewListCmd(nil), []string{"--zone-name", "example.com"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -60,7 +60,7 @@ func TestRecordsListJSON(t *testing.T) {
 
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
 
-	err := fx.Run(records.NewListCmd(), []string{"--zone-name", "example.com", "--output", "json"})
+	err := fx.Run(records.NewListCmd(nil), []string{"--zone-name", "example.com", "--output", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -73,7 +73,7 @@ func TestRecordsListJSON(t *testing.T) {
 
 func TestRecordsListMissingFlags(t *testing.T) {
 	fx := testutil.NewFixtureWithMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{})
-	err := fx.Run(records.NewListCmd(), []string{})
+	err := fx.Run(records.NewListCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
 	}
@@ -91,7 +91,7 @@ func TestRecordsListError(t *testing.T) {
 		},
 	}
 	fx := testutil.NewFixtureWithMocks(t, mockZone, mockRecord)
-	err := fx.Run(records.NewListCmd(), []string{"--zone-name", "example.com"})
+	err := fx.Run(records.NewListCmd(nil), []string{"--zone-name", "example.com"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

@@ -13,7 +13,7 @@ import (
 )
 
 // NewSetPermissionTemplateCmd returns a new "users set-permission-template" command instance.
-func NewSetPermissionTemplateCmd() *cobra.Command {
+func NewSetPermissionTemplateCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set-permission-template",
 		Short: "Assign a permission template to a user",
@@ -72,5 +72,7 @@ func NewSetPermissionTemplateCmd() *cobra.Command {
 	cmd.Flags().String("id", "", "User ID to identify the user")
 	cmd.Flags().String("template-id", "", "Permission template ID to assign (required)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

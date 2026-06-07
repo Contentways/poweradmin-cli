@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewZonesCommand(t *testing.T) {
-	cmd := zones.NewZonesCommand()
+	cmd := zones.NewZonesCommand(nil)
 
 	if cmd.Use != "zones" {
 		t.Fatalf("Use = %q", cmd.Use)

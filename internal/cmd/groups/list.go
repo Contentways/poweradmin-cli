@@ -14,7 +14,7 @@ import (
 )
 
 // NewListCmd returns a new "groups list" command instance.
-func NewListCmd() *cobra.Command {
+func NewListCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "List all groups",
@@ -65,5 +65,7 @@ func NewListCmd() *cobra.Command {
 
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().Bool("no-header", false, "Suppress table header row")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }

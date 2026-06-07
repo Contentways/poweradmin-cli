@@ -13,7 +13,7 @@ import (
 )
 
 // NewGetCmd returns a new "zones get" command instance.
-func NewGetCmd() *cobra.Command {
+func NewGetCmd(s *state.State) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "Get a DNS zone by name or ID",
@@ -78,5 +78,7 @@ func NewGetCmd() *cobra.Command {
 	cmd.Flags().String("name", "", "Zone name (e.g. example.com)")
 	cmd.Flags().String("id", "", "Zone ID")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	// Register shell completion for --name flag.
+	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
 	return cmd
 }
