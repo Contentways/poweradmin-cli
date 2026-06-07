@@ -10,6 +10,7 @@ import (
 	"github.com/contentways/poweradmin-cli/internal/cmd/groups"
 	"github.com/contentways/poweradmin-cli/internal/cmd/records"
 	"github.com/contentways/poweradmin-cli/internal/cmd/users"
+	cmdversion "github.com/contentways/poweradmin-cli/internal/cmd/version"
 	"github.com/contentways/poweradmin-cli/internal/cmd/zones"
 	"github.com/contentways/poweradmin-cli/internal/state"
 	"github.com/spf13/cobra"
@@ -53,6 +54,7 @@ func NewRootCommand(s *state.State) *cobra.Command {
 	root.AddCommand(records.NewRecordsCommand())
 	root.AddCommand(users.NewUsersCommand())
 	root.AddCommand(groups.NewGroupsCommand())
+	root.AddCommand(cmdversion.NewVersionCmd())
 
 	return root
 }
