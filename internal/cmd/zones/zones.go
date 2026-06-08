@@ -24,6 +24,7 @@ func NewZonesCommand(s *state.State) *cobra.Command {
 	cmd.AddCommand(NewGetCmd(s))
 	cmd.AddCommand(NewCreateCmd())
 	cmd.AddCommand(NewDeleteCmd(s))
+	cmd.AddCommand(NewExportCmd(s))
 
 	return cmd
 }
