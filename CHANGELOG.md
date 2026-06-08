@@ -1,5 +1,14 @@
 # Changelog
 
+## [v1.2.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.2.0)
+
+### Features
+
+- add zones export command for BIND zone file format
+- add zones import command with BIND zone file parser
+- update README.md
+- add permission-templates commands (list, get, create, update, delete)
+
 ## [v1.3.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.3.0)
 
 ### Features
