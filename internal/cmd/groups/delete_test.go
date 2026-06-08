@@ -22,7 +22,7 @@ func TestGroupsDelete(t *testing.T) {
 			return nil, nil
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewDeleteCmd(nil), []string{"--name", "TestGroup", "--yes"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -42,7 +42,7 @@ func TestGroupsDeleteJSON(t *testing.T) {
 			return nil, nil
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewDeleteCmd(nil), []string{"--name", "TestGroup", "--yes", "-o", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -54,7 +54,7 @@ func TestGroupsDeleteJSON(t *testing.T) {
 }
 
 func TestGroupsDeleteMissingFlags(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{})
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{}, nil)
 	err := fx.Run(groups.NewDeleteCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
@@ -70,7 +70,7 @@ func TestGroupsDeleteError(t *testing.T) {
 			return nil, fmt.Errorf("api error")
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewDeleteCmd(nil), []string{"--name", "TestGroup", "--yes"})
 	if err == nil {
 		t.Fatal("expected error, got nil")

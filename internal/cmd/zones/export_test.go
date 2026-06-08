@@ -47,7 +47,7 @@ func TestZonesExport(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, mockZone, mockRecord, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, mockRecord, nil, nil, nil)
 
 	err := fx.Run(zones.NewExportCmd(nil), []string{"--name", "example.com"})
 	if err != nil {
@@ -70,7 +70,7 @@ func TestZonesExport(t *testing.T) {
 }
 
 func TestZonesExportMissingFlags(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil, nil)
 	err := fx.Run(zones.NewExportCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
@@ -83,7 +83,7 @@ func TestZonesExportError(t *testing.T) {
 			return nil, nil, fmt.Errorf("api error")
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, mockZone, &testutil.MockRecordClient{}, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, &testutil.MockRecordClient{}, nil, nil, nil)
 	err := fx.Run(zones.NewExportCmd(nil), []string{"--name", "example.com"})
 	if err == nil {
 		t.Fatal("expected error, got nil")

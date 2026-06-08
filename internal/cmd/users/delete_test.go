@@ -23,7 +23,7 @@ func TestUsersDelete(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil, nil)
 
 	err := fx.Run(users.NewDeleteCmd(nil), []string{"--name", "max", "--yes"})
 	if err != nil {
@@ -49,7 +49,7 @@ func TestUsersDeleteJSON(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil, nil)
 
 	err := fx.Run(users.NewDeleteCmd(nil), []string{"--name", "max", "--yes", "--output", "json"})
 	if err != nil {
@@ -63,7 +63,7 @@ func TestUsersDeleteJSON(t *testing.T) {
 }
 
 func TestUsersDeleteMissingFlags(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{}, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{}, nil, nil)
 
 	err := fx.Run(users.NewDeleteCmd(nil), []string{})
 	if err == nil {
@@ -81,7 +81,7 @@ func TestUsersDeleteError(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil, nil)
 
 	err := fx.Run(users.NewDeleteCmd(nil), []string{"--name", "max", "--yes"})
 	if err == nil {

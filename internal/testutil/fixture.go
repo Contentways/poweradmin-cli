@@ -77,8 +77,9 @@ func (f *Fixture) Run(cmd *cobra.Command, args []string) error {
 	return cmd.Execute()
 }
 
-// NewFixtureWithAllMocks creates a Fixture with mock Zone, Record and User clients.
-func NewFixtureWithAllMocks(t *testing.T, zone poweradmin.IZoneClient, record poweradmin.IRecordClient, user poweradmin.IUserClient, group poweradmin.IGroupClient) *Fixture {
+// NewFixtureWithAllMocks creates a Fixture with mock Zone, Record, User, Group
+// and PermissionTemplate clients.
+func NewFixtureWithAllMocks(t *testing.T, zone poweradmin.IZoneClient, record poweradmin.IRecordClient, user poweradmin.IUserClient, group poweradmin.IGroupClient, permTemplate poweradmin.IPermissionTemplateClient) *Fixture {
 	t.Helper()
 	client, _ := poweradmin.NewClient(
 		poweradmin.WithBaseURL("https://test.example.com"),
@@ -88,6 +89,7 @@ func NewFixtureWithAllMocks(t *testing.T, zone poweradmin.IZoneClient, record po
 	client.Record = record
 	client.User = user
 	client.Group = group
+	client.PermissionTemplate = permTemplate
 	s := state.New("https://test.example.com", "test-key")
 	s.MockClient = client
 	return &Fixture{

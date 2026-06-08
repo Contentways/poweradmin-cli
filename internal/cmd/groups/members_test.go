@@ -24,7 +24,7 @@ func TestGroupsMembers(t *testing.T) {
 			}, nil, nil
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewMembersCmd(nil), []string{"--name", "Administrators"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -36,7 +36,7 @@ func TestGroupsMembers(t *testing.T) {
 }
 
 func TestGroupsMembersMissingFlags(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{})
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{}, nil)
 	err := fx.Run(groups.NewMembersCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
@@ -52,7 +52,7 @@ func TestGroupsMembersError(t *testing.T) {
 			return nil, nil, fmt.Errorf("api error")
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewMembersCmd(nil), []string{"--name", "Administrators"})
 	if err == nil {
 		t.Fatal("expected error, got nil")

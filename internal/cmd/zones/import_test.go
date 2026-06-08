@@ -36,7 +36,7 @@ www            IN    A      1.2.3.4
 `)
 	f.Close()
 
-	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil, nil)
 	err = fx.Run(zones.NewImportCmd(nil), []string{"--file", f.Name(), "--dry-run"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -76,7 +76,7 @@ _dmarc         IN    TXT    v=DMARC1; p=reject; rua=mailto:postmaster@example.co
 `)
 	f.Close()
 
-	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil, nil)
 	err = fx.Run(zones.NewImportCmd(nil), []string{"--file", f.Name(), "--dry-run"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -89,7 +89,7 @@ _dmarc         IN    TXT    v=DMARC1; p=reject; rua=mailto:postmaster@example.co
 }
 
 func TestZonesImportMissingFile(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil, nil)
 	err := fx.Run(zones.NewImportCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no --file provided")
@@ -97,7 +97,7 @@ func TestZonesImportMissingFile(t *testing.T) {
 }
 
 func TestZonesImportFileNotFound(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil, nil)
 	err := fx.Run(zones.NewImportCmd(nil), []string{"--file", "/tmp/nonexistent.zone"})
 	if err == nil {
 		t.Fatal("expected error for nonexistent file")
@@ -123,7 +123,7 @@ $TTL 3600
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, mockZone, &testutil.MockRecordClient{}, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, &testutil.MockRecordClient{}, nil, nil, nil)
 	err = fx.Run(zones.NewImportCmd(nil), []string{"--file", f.Name()})
 	if err == nil {
 		t.Fatal("expected error when zone not found and --create-zone not set")
@@ -158,7 +158,7 @@ $TTL 3600
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, mockZone, mockRecord, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, mockRecord, nil, nil, nil)
 	err = fx.Run(zones.NewImportCmd(nil), []string{"--file", f.Name(), "--create-zone"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

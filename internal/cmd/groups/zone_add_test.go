@@ -19,7 +19,7 @@ func TestGroupsZoneAdd(t *testing.T) {
 			return nil, nil
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewZoneAddCmd(nil), []string{"--group-id", "1", "--zone-id", "78"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -31,7 +31,7 @@ func TestGroupsZoneAdd(t *testing.T) {
 }
 
 func TestGroupsZoneAddMissingFlags(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{})
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{}, nil)
 	err := fx.Run(groups.NewZoneAddCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
@@ -44,7 +44,7 @@ func TestGroupsZoneAddError(t *testing.T) {
 			return nil, fmt.Errorf("api error")
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewZoneAddCmd(nil), []string{"--group-id", "1", "--zone-id", "78"})
 	if err == nil {
 		t.Fatal("expected error, got nil")

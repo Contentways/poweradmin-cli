@@ -19,7 +19,7 @@ func TestGroupsCreate(t *testing.T) {
 			return 42, nil, nil
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewCreateCmd(), []string{"--name", "TestGroup"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -36,7 +36,7 @@ func TestGroupsCreateJSON(t *testing.T) {
 			return 42, nil, nil
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewCreateCmd(), []string{"--name", "TestGroup", "-o", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -48,7 +48,7 @@ func TestGroupsCreateJSON(t *testing.T) {
 }
 
 func TestGroupsCreateMissingName(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{})
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{}, nil)
 	err := fx.Run(groups.NewCreateCmd(), []string{})
 	if err == nil {
 		t.Fatal("expected error when name is missing")
@@ -61,7 +61,7 @@ func TestGroupsCreateError(t *testing.T) {
 			return 0, nil, fmt.Errorf("api error")
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewCreateCmd(), []string{"--name", "TestGroup"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
