@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.3.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.3.0)
+
+### Features
+
+- switch to keyless cosign signing via GitHub OIDC
+
 ## [v1.2.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.2.0)
 
 ### Features
