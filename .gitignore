@@ -5,3 +5,5 @@ coverage.txt
 # Added by goreleaser init:
 dist/
 coverage.out
+cosign.key
+cosign.pub
