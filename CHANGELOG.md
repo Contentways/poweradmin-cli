@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.2.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.2.0)
+
+### Features
+
+- add cosign image signing to release workflow
+
 ## [v1.1.3](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.1.3)
 
 ### Bug Fixes
