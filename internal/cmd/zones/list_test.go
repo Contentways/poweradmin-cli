@@ -87,7 +87,7 @@ func TestZonesListFilterByType(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, mockZone, nil, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, nil, nil, nil, nil)
 
 	err := fx.Run(zones.NewListCmd(nil), []string{"--type", "NATIVE"})
 	if err != nil {
@@ -113,7 +113,7 @@ func TestZonesListFilterByName(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, mockZone, nil, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, nil, nil, nil, nil)
 
 	err := fx.Run(zones.NewListCmd(nil), []string{"--name-filter", "contentways"})
 	if err != nil {

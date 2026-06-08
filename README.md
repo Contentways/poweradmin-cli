@@ -266,6 +266,32 @@ poweradmin groups zone-add --group-id 1 --zone-id 78
 poweradmin groups zone-remove --group-id 1 --zone-id 78
 ```
 
+### Permission Templates
+
+```bash
+# List all permission templates
+poweradmin permission-templates list
+poweradmin permission-templates list -o json
+
+# Get a template by name or ID (shows full permission list)
+poweradmin permission-templates get --name Administrator
+poweradmin permission-templates get --id 1 -o json
+
+# Create a template
+poweradmin permission-templates create --name "Zone Editors" --description "Can edit zone records"
+poweradmin permission-templates create --name "Zone Editors" --type group --permissions 1,2,3
+
+# Create and capture the ID
+PT_ID=$(poweradmin permission-templates create --name "Zone Editors" -q)
+
+# Update a template
+poweradmin permission-templates update --name "Zone Editors" --new-name "DNS Editors"
+poweradmin permission-templates update --name "Zone Editors" --permissions 1,2,3,4
+
+# Delete a template
+poweradmin permission-templates delete --name "Zone Editors" --yes
+```
+
 ### Version
 
 ```bash

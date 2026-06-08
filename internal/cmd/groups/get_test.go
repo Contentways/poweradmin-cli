@@ -19,7 +19,7 @@ func TestGroupsGetByName(t *testing.T) {
 			return &poweradmin.Group{ID: 1, Name: name, Description: "Full access"}, nil, nil
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewGetCmd(nil), []string{"--name", "Administrators"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -36,7 +36,7 @@ func TestGroupsGetJSON(t *testing.T) {
 			return &poweradmin.Group{ID: 1, Name: name}, nil, nil
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewGetCmd(nil), []string{"--name", "Administrators", "-o", "json"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -48,7 +48,7 @@ func TestGroupsGetJSON(t *testing.T) {
 }
 
 func TestGroupsGetMissingFlags(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{})
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, &testutil.MockGroupClient{}, nil)
 	err := fx.Run(groups.NewGetCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
@@ -61,7 +61,7 @@ func TestGroupsGetError(t *testing.T) {
 			return nil, nil, fmt.Errorf("api error")
 		},
 	}
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, nil, mockGroup, nil)
 	err := fx.Run(groups.NewGetCmd(nil), []string{"--name", "Administrators"})
 	if err == nil {
 		t.Fatal("expected error, got nil")

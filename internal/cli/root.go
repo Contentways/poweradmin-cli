@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/contentways/poweradmin-cli/internal/cmd/groups"
+	"github.com/contentways/poweradmin-cli/internal/cmd/permission_templates"
 	"github.com/contentways/poweradmin-cli/internal/cmd/records"
 	"github.com/contentways/poweradmin-cli/internal/cmd/users"
 	cmdversion "github.com/contentways/poweradmin-cli/internal/cmd/version"
@@ -70,6 +71,7 @@ func NewRootCommand(s *state.State) *cobra.Command {
 	root.AddCommand(users.NewUsersCommand(s))
 	root.AddCommand(groups.NewGroupsCommand(s))
 	root.AddCommand(cmdversion.NewVersionCmd())
+	root.AddCommand(permission_templates.NewPermissionTemplatesCommand(s))
 
 	return root
 }

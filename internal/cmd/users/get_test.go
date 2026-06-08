@@ -20,7 +20,7 @@ func TestUsersGetByName(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil, nil)
 
 	err := fx.Run(users.NewGetCmd(nil), []string{"--name", "max"})
 	if err != nil {
@@ -40,7 +40,7 @@ func TestUsersGetJSON(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil, nil)
 
 	err := fx.Run(users.NewGetCmd(nil), []string{"--name", "max", "--output", "json"})
 	if err != nil {
@@ -54,7 +54,7 @@ func TestUsersGetJSON(t *testing.T) {
 }
 
 func TestUsersGetMissingFlags(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{}, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, &testutil.MockUserClient{}, nil, nil)
 
 	err := fx.Run(users.NewGetCmd(nil), []string{})
 	if err == nil {
@@ -69,7 +69,7 @@ func TestUsersGetError(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, nil, nil, mockUser, nil, nil)
 
 	err := fx.Run(users.NewGetCmd(nil), []string{"--name", "max"})
 	if err == nil {

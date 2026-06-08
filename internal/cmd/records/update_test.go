@@ -25,7 +25,7 @@ func TestRecordsUpdate(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, mockZone, mockRecord, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, mockRecord, nil, nil, nil)
 
 	err := fx.Run(records.NewUpdateCmd(nil), []string{
 		"--zone-name", "example.com",
@@ -54,7 +54,7 @@ func TestRecordsUpdateJSON(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, mockZone, mockRecord, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, mockRecord, nil, nil, nil)
 
 	err := fx.Run(records.NewUpdateCmd(nil), []string{
 		"--zone-name", "example.com",
@@ -73,7 +73,7 @@ func TestRecordsUpdateJSON(t *testing.T) {
 }
 
 func TestRecordsUpdateMissingFlags(t *testing.T) {
-	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, &testutil.MockZoneClient{}, &testutil.MockRecordClient{}, nil, nil, nil)
 	err := fx.Run(records.NewUpdateCmd(nil), []string{})
 	if err == nil {
 		t.Fatal("expected error when no flags provided")
@@ -92,7 +92,7 @@ func TestRecordsUpdateError(t *testing.T) {
 		},
 	}
 
-	fx := testutil.NewFixtureWithAllMocks(t, mockZone, mockRecord, nil, nil)
+	fx := testutil.NewFixtureWithAllMocks(t, mockZone, mockRecord, nil, nil, nil)
 
 	err := fx.Run(records.NewUpdateCmd(nil), []string{
 		"--zone-name", "example.com",
