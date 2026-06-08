@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -56,9 +57,6 @@ jobs:
       - name: Sign Docker image with cosign
         run: |
           IMAGE_TAG=${{ github.event.inputs.tag || github.ref_name }}
-          cosign sign --key env://COSIGN_PRIVATE_KEY \
+          cosign sign \
             contentwaysorg/poweradmin-cli:${IMAGE_TAG} \
             contentwaysorg/poweradmin-cli:latest
-        env:
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
-          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
