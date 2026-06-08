@@ -57,6 +57,8 @@ jobs:
       - name: Sign Docker image with cosign
         run: |
           IMAGE_TAG=${{ github.event.inputs.tag || github.ref_name }}
+          # GoReleaser pushes images without the 'v' prefix
+          IMAGE_TAG=${IMAGE_TAG#v}
           cosign sign \
             contentwaysorg/poweradmin-cli:${IMAGE_TAG} \
             contentwaysorg/poweradmin-cli:latest
