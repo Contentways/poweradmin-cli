@@ -114,5 +114,6 @@ func NewUpdateCmd(s *state.State) *cobra.Command {
 	cmd.Flags().String("type", "", "New template type. One of: user|group")
 	cmd.Flags().StringSlice("permissions", []string{}, "New permission IDs (replaces existing)")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	cmd.RegisterFlagCompletionFunc("name", base.PermissionTemplateNameCompletion(s))
 	return cmd
 }

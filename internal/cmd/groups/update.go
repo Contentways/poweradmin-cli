@@ -70,6 +70,6 @@ func NewUpdateCmd(s *state.State) *cobra.Command {
 	cmd.Flags().String("description", "", "New description")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	// Register shell completion for --name flag.
-	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
+	cmd.RegisterFlagCompletionFunc("name", base.GroupNameCompletion(s))
 	return cmd
 }

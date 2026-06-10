@@ -57,6 +57,6 @@ func NewZoneAddCmd(s *state.State) *cobra.Command {
 	cmd.Flags().String("group-id", "", "Group ID (required)")
 	cmd.Flags().String("zone-id", "", "Zone ID to add (required)")
 	// Register shell completion for --name flag.
-	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
+	cmd.RegisterFlagCompletionFunc("name", base.GroupNameCompletion(s))
 	return cmd
 }
