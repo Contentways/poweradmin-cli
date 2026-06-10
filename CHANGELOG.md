@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.2.1](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.2.1)
+
+### Bug Fixes
+
+- use GroupNameCompletion for groups commands, add PermissionTemplateNameCompletion
+
 ## [v1.2.0](https://github.com/Contentways/poweradmin-cli/releases/tag/v1.2.0)
 
 ### Features
