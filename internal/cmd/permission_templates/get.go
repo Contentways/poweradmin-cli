@@ -85,5 +85,6 @@ func NewGetCmd(s *state.State) *cobra.Command {
 	cmd.Flags().String("name", "", "Permission template name")
 	cmd.Flags().String("id", "", "Permission template ID")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
+	cmd.RegisterFlagCompletionFunc("name", base.PermissionTemplateNameCompletion(s))
 	return cmd
 }

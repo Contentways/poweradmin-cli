@@ -223,3 +223,25 @@ func GroupNameCompletion(s *state.State) func(*cobra.Command, []string, string) 
 		return names, cobra.ShellCompDirectiveNoFileComp
 	}
 }
+
+// PermissionTemplateNameCompletion returns a Cobra completion function that
+// fetches permission template names from the Poweradmin API.
+func PermissionTemplateNameCompletion(s *state.State) func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		client, err := s.Client()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		templates, _, err := client.PermissionTemplate.List(cmd.Context())
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+		var names []string
+		for _, t := range templates {
+			if strings.HasPrefix(t.Name, toComplete) {
+				names = append(names, t.Name)
+			}
+		}
+		return names, cobra.ShellCompDirectiveNoFileComp
+	}
+}

@@ -57,6 +57,6 @@ func NewMemberRemoveCmd(s *state.State) *cobra.Command {
 	cmd.Flags().String("group-id", "", "Group ID (required)")
 	cmd.Flags().String("user-id", "", "User ID to remove (required)")
 	// Register shell completion for --name flag.
-	cmd.RegisterFlagCompletionFunc("name", base.ZoneNameCompletion(s))
+	cmd.RegisterFlagCompletionFunc("name", base.GroupNameCompletion(s))
 	return cmd
 }

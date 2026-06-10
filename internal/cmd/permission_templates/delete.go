@@ -85,5 +85,6 @@ func NewDeleteCmd(s *state.State) *cobra.Command {
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().BoolP("yes", "y", false, "Skip confirmation prompt")
 	cmd.Flags().BoolP("quiet", "q", false, "Suppress output after deletion")
+	cmd.RegisterFlagCompletionFunc("name", base.PermissionTemplateNameCompletion(s))
 	return cmd
 }
