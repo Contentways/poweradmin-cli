@@ -23,6 +23,7 @@ func NewCreateCmd() *cobra.Command {
 			s := state.FromContext(cmd.Context())
 
 			zoneType, _ := cmd.Flags().GetString("type")
+			ttl, _ := cmd.Flags().GetInt("ttl")
 
 			client, err := s.Client()
 			if err != nil {
@@ -43,7 +44,7 @@ func NewCreateCmd() *cobra.Command {
 					Name:    args[0],
 					Type:    "NS",
 					Content: ns,
-					TTL:     3600,
+					TTL:     ttl,
 				})
 				if err != nil {
 					return fmt.Errorf("failed to create NS record for %s: %w", ns, err)
@@ -59,6 +60,7 @@ func NewCreateCmd() *cobra.Command {
 					"name":        args[0],
 					"type":        zoneType,
 					"nameservers": nameservers,
+					"ttl":         ttl,
 				})
 			}
 
@@ -74,6 +76,7 @@ func NewCreateCmd() *cobra.Command {
 
 	cmd.Flags().String("type", "NATIVE", "Zone type. One of: NATIVE|MASTER|SLAVE")
 	cmd.Flags().StringSlice("nameserver", []string{}, "Nameserver to add (comma-separated or multiple flags)")
+	cmd.Flags().Int("ttl", 3600, "TTL for the created NS records")
 	cmd.Flags().StringP("output", "o", "table", "Output format. One of: table|json")
 	cmd.Flags().BoolP("quiet", "q", false, "Only print the ID of the created zone")
 	return cmd
